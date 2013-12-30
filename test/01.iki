@@ -1,0 +1,14 @@
+begin
+  var x;
+  
+  var y;
+
+  read y, x;
+  while 4 - x loop
+    x = 1 + 2  - 3;
+
+  end;
+
+  write y * (3 + 4);
+end
+
