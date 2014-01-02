@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "byline": "latest"
+    "byline": "latest",
+    "hashmap": "latest",
+    "optimist": "latest"
   }
 }

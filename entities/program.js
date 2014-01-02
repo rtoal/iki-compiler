@@ -2,13 +2,12 @@ function Program(block) {
   this.block = block
 }
 
-Program.prototype.analyze = function (context) {
-  this.block.analyze(context)
+Program.prototype.analyze = function () {
+  this.block.analyze()
 }
 
 Program.prototype.optimize = function () {
-  this.block.optimize();
-  // TODO removeUnusedVariables();
+  console.log('Optimization is not yet implemented')
 }
 
 Program.prototype.toString = function () {

@@ -30,13 +30,17 @@ function scan(line, linenumber) {
 
     start = pos;
 
-    if (/[,+\-*\/();=]/.test(line[pos])) {
+    if (/<=|==|>=|!=/.test(line.substring(pos, pos+2))) {
+      emit(line.substring(pos, pos+2))
+      pos += 2
+
+    } else if (/[+\-*\/(),:;=<>]/.test(line[pos])) {
       emit(line[pos++])
 
     } else if (/[A-Za-z]/.test(line[pos])) {
       while (/\w/.test(line[pos]) && pos < line.length) pos++;
       var word = line.substring(start, pos)
-      if (/begin|end|var|read|write|while|loop/.test(word)) {
+      if (/int|bool|var|read|write|while|loop|end|and|or|not|true|false/.test(word)) {
         emit(word)
       } else {
         emit('ID', word)

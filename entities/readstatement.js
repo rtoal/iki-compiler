@@ -3,7 +3,7 @@ function ReadStatement(varrefs) {
 }
 
 ReadStatement.prototype.analyze = function (context) {
-  // TODO
+  this.varrefs.forEach(function (v) {v.analyze(context)})
 }
 
 ReadStatement.prototype.toString = function () {

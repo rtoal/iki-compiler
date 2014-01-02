@@ -1,9 +1,11 @@
+var Type = require('./type')
+
 function IntegerLiteral(token) {
   this.token = token;
 }
 
 IntegerLiteral.prototype.analyze = function (context) {
-  // TODO
+  this.type = Type.INT
 }
 
 IntegerLiteral.prototype.toString = function () {

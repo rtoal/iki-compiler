@@ -1,15 +1,16 @@
-function AssignmentStatement(varref, expression) {
-  this.varref = varref;
-  this.expression = expression;
+function AssignmentStatement(target, source) {
+  this.target = target;
+  this.source = source;
 }
 
 AssignmentStatement.prototype.analyze = function (context) {
-  this.varref.analyze(context);
-  this.expression.analyze(context);
+  this.target.analyze(context);
+  this.source.analyze(context);
+  this.target.type.assertCompatibleWith(this.source, 'Type mismatch in assignment')
 }
 
 AssignmentStatement.prototype.toString = function () {
-  return '(= ' + this.varref + ' ' + this.expression + ')'
+  return '(= ' + this.target + ' ' + this.source + ')'
 }
 
 module.exports = AssignmentStatement;

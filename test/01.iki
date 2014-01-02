@@ -1,14 +1,15 @@
-begin
-  var x;
-  
-  var y;
+var x: int;
+var y: int;
 
-  read y, x;
-  while 4 - x loop
-    x = 1 + 2  - 3;
+read y, x;
+while 4 - x <= 10 and 0 == 1 loop
+  var x: int;
+  x = 1 + 2 - 3;
+end;
 
-  end;
+var test: bool;
+test = false and 1 == 2;
 
-  write y * (3 + 4);
-end
+write y;
 
+write y * (3 + 44), 6 - -8, test or not test;

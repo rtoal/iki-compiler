@@ -1,13 +1,15 @@
-function VariableDeclaration(token) {
-  this.token = token;
+function VariableDeclaration(id, type) {
+  this.id = id;
+  this.type = type
 }
 
 VariableDeclaration.prototype.analyze = function (context) {
-  // TODO
+  context.assertVariableNotAlreadyDeclared(this.id)
+  context.addVariable(this.id.lexeme, this);
 }
 
 VariableDeclaration.prototype.toString = function () {
-  return '(Var :' + this.token.lexeme + ')'
+  return '(Var :' + this.id.lexeme + ' ' + this.type + ')'
 }
 
 module.exports = VariableDeclaration;
