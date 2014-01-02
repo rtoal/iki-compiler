@@ -5,6 +5,8 @@
   "dependencies": {
     "byline": "latest",
     "hashmap": "latest",
-    "optimist": "latest"
+    "optimist": "latest",
+    "mocha": "latest",
+    "should": "latest"
   }
 }
