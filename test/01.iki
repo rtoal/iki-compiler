@@ -8,7 +8,7 @@ while 4 - x <= 10 and 0 == 1 loop
 end;
 
 var test: bool;
-test = false and 1 == 2;
+test = false and 8 == 2;
 
 write y;
 

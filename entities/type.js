@@ -7,40 +7,33 @@ function Type(name) {
   allTypes[name] = this;
 }
 
-Type.BOOL = new Type('bool')
-Type.INT = new Type('int')
-
-Type.prototype.analyze = function (context) {
-  // Intentionally empty - nothing to do in Iki
-}
+// In Iki there are only two types
+exports.BOOL = Type.BOOL = new Type('bool')
+exports.INT = Type.INT = new Type('int')
 
 Type.prototype.toString = function () {
   return this.name;
 }
 
-Type.prototype.compatibleWith = function (other) {
-  // Iki only has int and bool, and they aren't compatible at all
-  return this === other;
-}
+exports.forName = function (name) {
+  return allTypes[name]
+};
 
 Type.prototype.assertInteger = function (message, location) {
-  if (!Type.INT.compatibleWith(this)) {
+  if (this !== Type.INT) {
     error(message, location)
   }
 }
 
 Type.prototype.assertBoolean = function (message, location) {
-  if (!Type.BOOL.compatibleWith(this)) {
+  if (this !== Type.BOOL) {
     error(message, location)
   }
 }
 
-Type.prototype.assertCompatibleWith = function (source, message, location) {
-  if (!this.compatibleWith(source.type)) {
+Type.prototype.assertCompatibleWith = function (sourceType, message, location) {
+  // In more sophisticated languages, comapatibility would be more complex
+  if (this !== sourceType) {
     error(message, location)
   }
 }
-
-exports.BOOL = Type.BOOL;
-exports.INT = Type.INT;
-exports.forName = function (name) {console.log(allTypes, name); return allTypes[name]};

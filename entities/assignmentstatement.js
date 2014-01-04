@@ -6,7 +6,7 @@ function AssignmentStatement(target, source) {
 AssignmentStatement.prototype.analyze = function (context) {
   this.target.analyze(context);
   this.source.analyze(context);
-  this.target.type.assertCompatibleWith(this.source, 'Type mismatch in assignment')
+  this.source.type.assertCompatibleWith(this.target.type, 'Type mismatch in assignment')
 }
 
 AssignmentStatement.prototype.toString = function () {

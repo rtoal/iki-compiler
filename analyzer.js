@@ -1,8 +1,16 @@
 var error = require('./error')
 
-function AnalysisContext (parent) {
+function AnalysisContext(parent) {
   this.parent = parent;
   this.symbolTable = {}
+}
+
+AnalysisContext.initialContext = function () {
+  return new AnalysisContext(null)
+}
+
+AnalysisContext.prototype.createChildContext = function () {
+  return new AnalysisContext(this)
 }
 
 AnalysisContext.prototype.assertVariableNotAlreadyDeclared = function (v) {
@@ -26,4 +34,4 @@ AnalysisContext.prototype.lookupVariable = function (v) {
   }
 }
 
-exports.AnalysisContext = AnalysisContext;
+exports.initialContext = AnalysisContext.initialContext;
