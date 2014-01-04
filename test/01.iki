@@ -7,7 +7,7 @@ while 4 - x <= 10 and 0 == 1 loop
   x = 1 + 2 - 3;
 end;
 
-var test: bool;
+var test: bool; -- ok
 test = false and 8 == 2;
 
 write y;
