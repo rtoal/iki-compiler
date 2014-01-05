@@ -1,11 +1,13 @@
 {
   "name": "iki-compiler",
   "version": "0.0.1",
-  "private": true,
+  "description": "a simple compiler for the Iki programming language",
   "dependencies": {
     "byline": "latest",
     "hashmap": "latest",
-    "optimist": "latest",
+    "optimist": "latest"
+  },
+  "devDependencies": {
     "mocha": "latest",
     "should": "latest"
   }
