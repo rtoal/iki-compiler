@@ -14,10 +14,14 @@ describe('The scanner', function () {
     });
   })
 
-  it('does line numbers', function (done) {
-    scan('test/hello.iki', function (tokens) {
-      tokens[0].line.should.eql(1)
+  it('properly handles comments and blank lines', function (done) {
+    scan('test/simple.iki', function (tokens) {
+      tokens[0].line.should.eql(2)
       tokens[0].col.should.eql(1)
+      tokens[8].line.should.eql(4)
+      tokens[8].col.should.eql(7)
+      tokens[15].line.should.eql(5)
+      tokens[15].col.should.eql(8)
       done()
     });
   });
