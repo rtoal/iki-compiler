@@ -1,0 +1,5 @@
+-- Not hello, world
+var x: int;
+
+x = 9 - 3 * 5; -- wow, assignment
+write -x, true or 1 == x;
