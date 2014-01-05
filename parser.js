@@ -30,7 +30,7 @@ function at(symbol) {
   }  
 }
 
-function match (symbol) {
+function match(symbol) {
   if (tokens.length === 0) {
     error('Unexpected end of input')
   } else if (symbol === undefined || symbol === tokens[0].kind) {

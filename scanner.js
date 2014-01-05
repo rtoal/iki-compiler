@@ -58,9 +58,8 @@ function scan(line, linenumber, tokens) {
       while (/\d/.test(line[pos])) pos++
       emit('INTLIT', line.substring(start, pos))
     
-    // Lexical error
     } else {
-      error('Illegal character in source code: ' + line[pos], {line: linenumber, col: pos+1})
+      error('Illegal character: ' + line[pos], {line: linenumber, col: pos+1})
     }
   }
 }
