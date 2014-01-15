@@ -1,8 +1,6 @@
-var Type = require('./type')
-
 function WhileStatement(condition, body) {
-  this.condition = condition;
-  this.body = body;
+  this.condition = condition
+  this.body = body
 }
 
 WhileStatement.prototype.analyze = function (context) {

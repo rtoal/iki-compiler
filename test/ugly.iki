@@ -1,0 +1,12 @@
+-- This doesn't write hello world
+    -- My first program
+   var x :int  ;       var y   : int;
+           -- uggh: lousy indentation   and     SPACing
+
+         while y - 5 == 3 loop
+       var y: int;
+                      read x ,y;
+      x = 2 * (3+y);
+        end;
+          write 5;    -- Not sure why five, but okay.
+

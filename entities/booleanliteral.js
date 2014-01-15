@@ -1,15 +1,20 @@
 var Type = require('./type')
 
-function BooleanLiteral(token) {
-  this.token = token;
+var all = {}
+
+function BooleanLiteral(name) {
+  this.name = name;
+  all[name] = this
 }
+
+exports.TRUE = BooleanLiteral.TRUE = new BooleanLiteral('true')
+exports.FALSE = BooleanLiteral.FALSE = new BooleanLiteral('false')
+exports.forName = function (name) {return all[name]}
 
 BooleanLiteral.prototype.analyze = function (context) {
   this.type = Type.BOOL
 }
 
 BooleanLiteral.prototype.toString = function () {
-  return this.token.lexeme;
+  return this.name
 }
-
-module.exports = BooleanLiteral;

@@ -15,34 +15,15 @@ var VariableReference = require('./entities/variablereference')
 var BinaryExpression = require('./entities/binaryexpression')
 var UnaryExpression = require('./entities/unaryexpression')
 
-module.exports = function (scanner_output, callback) {
+var tokens
+
+module.exports = function (scanner_output) {
   tokens = scanner_output
   return parseProgram()
 }
 
-function at(symbol) {
-  if (tokens.length === 0) {
-    return false
-  } else if (Array.isArray(symbol)) {
-    return symbol.some(function (s) {return at(s)})
-  } else {
-    return symbol === tokens[0].kind
-  }  
-}
-
-function match(symbol) {
-  if (tokens.length === 0) {
-    error('Unexpected end of input')
-  } else if (symbol === undefined || symbol === tokens[0].kind) {
-    return tokens.shift()
-  } else {
-    error('Expected ' + symbol + ' but found ' + tokens[0].kind, tokens[0])
-  }
-}
-
 function parseProgram() {
-  var block = parseBlock()
-  return new Program(block)
+  return new Program(parseBlock())
 }
 
 function parseBlock() {
@@ -66,7 +47,7 @@ function parseStatement() {
   } else if (at('while')) {
     return parseWhileStatement()
   } else {
-    error('Illegal start of statement', tokens[0])
+    error('Statement expected', tokens[0])
   }
 }
 
@@ -82,7 +63,7 @@ function parseType() {
   if (at(['int','bool'])) {
     return Type.forName(match().lexeme)
   } else {
-    error('Illegal type', tokens[0])
+    error('Type expected', tokens[0])
   }
 }
 
@@ -186,7 +167,7 @@ function parseExp5() {
 
 function parseExp6() {
   if (at(['true','false'])) {
-    return new BooleanLiteral(match())
+    return new BooleanLiteral.forName(match().lexeme)
   } else if (at('INTLIT')) {
     return new IntegerLiteral(match())
   } else if (at('ID')) {
@@ -198,5 +179,25 @@ function parseExp6() {
     return expression
   } else {
     error('Illegal start of expression', tokens[0])
+  }
+}
+
+function at(symbol) {
+  if (tokens.length === 0) {
+    return false
+  } else if (Array.isArray(symbol)) {
+    return symbol.some(function (s) {return at(s)})
+  } else {
+    return symbol === tokens[0].kind
+  }  
+}
+
+function match(symbol) {
+  if (tokens.length === 0) {
+    error('Unexpected end of input')
+  } else if (symbol === undefined || symbol === tokens[0].kind) {
+    return tokens.shift()
+  } else {
+    error('Expected ' + symbol + ' but found ' + tokens[0].kind, tokens[0])
   }
 }

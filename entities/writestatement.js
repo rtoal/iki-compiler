@@ -1,5 +1,5 @@
 function WriteStatement(expressions) {
-  this.expressions = expressions;
+  this.expressions = expressions
 }
 
 WriteStatement.prototype.analyze = function (context) {
