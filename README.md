@@ -1,6 +1,6 @@
-This is a compiler for the little programming language called Iki. The compiler is a node.js app.  It's indented to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts.  It illustrates recursive descent parsing and a whole lot of duck typing.
+This is a compiler for the little programming language called Iki. The compiler is a node.js app.  It's intented to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts. Parsing is done by hand with a simple recursive-descent parser.
 
-**NOTE: THIS PROJECT IS STILL UNDER DEVELOPMENT**
+**This project is very much under development.**
 
 ## Usage
 
@@ -11,12 +11,12 @@ iki.js [-t] [-a] [-o] [-i] [--target [js|c|x86]] filename
   -a scans, parses, prints the abstract syntax tree, then exits
   -o does optimizations
   -i goes up to semantic analysis, prints the semantic graph, then exits
-  --target selects the output format (default is js)
+  --target selects the output format (default is `js`)
 ```
 
 ## Grammar
 
-Iki programs are free-format.  Comments start with `--` and extend to the end of the line.  The predefined tokens are `Intlit`, a sequence of one or more decimal digits, and `Id`, a sequence of Basic Latin letters, decimal digits, and underscores, beginning with a letter.
+Iki programs are free-format.  Comments start with `--` and extend to the end of the line.  The predefined tokens are `Intlit`, a sequence of one or more Basic Latin decimal digits, and `Id`, a sequence of Basic Latin letters, Basic Latin decimal digits, and underscores, beginning with a letter, that is not a reserved word (`int`, `bool`, `var`, `read`, `write`, `while`, `loop`, `end`, `and`, `or`, `not`, `true`, `false`).  Tokenization uses maximal much, where the space characters are U+0009 through U+000D, U+2028, U+2029, and any character in the Unicode Zs category.
 
 The macrosyntax is given below, in a form that can be directly input into Gunther Rademacher's [Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui)
 
@@ -90,26 +90,26 @@ And the semantic graph like so:
 
 ```
 $ ./iki.js -i test/simple.iki 
-#3   Type {"name":"int"}
-#2   VariableDeclaration {"id":"x","type":"#3"}
-#5   VariableReference {"token":"x","referent":"#2","type":"#3"}
-#7   IntegerLiteral {"token":"9","type":"#3"}
-#9   IntegerLiteral {"token":"3","type":"#3"}
-#10  IntegerLiteral {"token":"5","type":"#3"}
-#8   BinaryExpression {"op":"*","left":"#9","right":"#10","type":"#3"}
-#6   BinaryExpression {"op":"-","left":"#7","right":"#8","type":"#3"}
-#4   AssignmentStatement {"target":"#5","source":"#6"}
-#13  VariableReference {"token":"x","referent":"#2","type":"#3"}
-#12  UnaryExpression {"op":"-","operand":"#13","type":"#3"}
-#16  Type {"name":"bool"}
-#15  BooleanLiteral {"token":"true","type":"#16"}
-#18  IntegerLiteral {"token":"1","type":"#3"}
-#19  VariableReference {"token":"x","referent":"#2","type":"#3"}
-#17  BinaryExpression {"op":"==","left":"#18","right":"#19","type":"#16"}
-#14  BinaryExpression {"op":"or","left":"#15","right":"#17","type":"#16"}
-#11  WriteStatement {"expressions":["#12","#14"]}
-#1   Block {"statements":["#2","#4","#11"]}
-#0   Program {"block":"#1"}
+3   Type {"name":"int"}
+2   VariableDeclaration {"id":"x","type":3}
+5   VariableReference {"token":"x","referent":2,"type":3}
+7   IntegerLiteral {"token":"9","type":3}
+9   IntegerLiteral {"token":"3","type":3}
+10  IntegerLiteral {"token":"5","type":3}
+8   BinaryExpression {"op":"*","left":9,"right":10,"type":3}
+6   BinaryExpression {"op":"-","left":7,"right":8,"type":3}
+4   AssignmentStatement {"target":5,"source":6}
+13  VariableReference {"token":"x","referent":2,"type":3}
+12  UnaryExpression {"op":"-","operand":13,"type":3}
+16  Type {"name":"bool"}
+15  BooleanLiteral {"name":"true","type":16}
+18  IntegerLiteral {"token":"1","type":3}
+19  VariableReference {"token":"x","referent":2,"type":3}
+17  BinaryExpression {"op":"==","left":18,"right":19,"type":16}
+14  BinaryExpression {"op":"or","left":15,"right":17,"type":16}
+11  WriteStatement {"expressions":[12,14]}
+1   Block {"statements":[2,4,11]}
+0   Program {"block":1}
 ```
 
 To translate the program to JavaScript:
@@ -141,4 +141,10 @@ int main() {
 And to x86:
 
 ```
+$ ./iki.js --target x86 test/simple.iki 
+.
+.
+.
+.
+.
 ```

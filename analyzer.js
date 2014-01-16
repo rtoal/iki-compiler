@@ -1,7 +1,7 @@
 var error = require('./error')
 
 function AnalysisContext(parent) {
-  this.parent = parent;
+  this.parent = parent
   this.symbolTable = {}
 }
 
@@ -13,25 +13,25 @@ AnalysisContext.prototype.createChildContext = function () {
   return new AnalysisContext(this)
 }
 
-AnalysisContext.prototype.assertVariableNotAlreadyDeclared = function (v) {
-  if (this.symbolTable[v.lexeme]) {
-    error('Variable ' + v.lexeme + ' already declared', v)
+AnalysisContext.prototype.assertVariableNotAlreadyDeclared = function (token) {
+  if (this.symbolTable[token.lexeme]) {
+    error('Variable ' + token.lexeme + ' already declared', token)
   }
 }
 
-AnalysisContext.prototype.addVariable = function (v, entity) {
-  this.symbolTable[v] = entity;
+AnalysisContext.prototype.addVariable = function (name, entity) {
+  this.symbolTable[name] = entity
 }
 
-AnalysisContext.prototype.lookupVariable = function (v) {
-  var variable = this.symbolTable[v.lexeme];
+AnalysisContext.prototype.lookupVariable = function (token) {
+  var variable = this.symbolTable[token.lexeme]
   if (variable) {
-    return variable;
+    return variable
   } else if (!this.parent) {
-    error('Variable ' + v.lexeme + ' not found', v)
+    error('Variable ' + token.lexeme + ' not found', token)
   } else {
-    return this.parent.lookupVariable(v)
+    return this.parent.lookupVariable(token)
   }
 }
 
-exports.initialContext = AnalysisContext.initialContext;
+exports.initialContext = AnalysisContext.initialContext

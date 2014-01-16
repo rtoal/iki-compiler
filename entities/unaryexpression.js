@@ -1,8 +1,12 @@
 var Type = require('./type')
 
 function UnaryExpression(op, operand) {
-  this.op = op;
-  this.operand = operand;
+  this.op = op
+  this.operand = operand
+}
+
+UnaryExpression.prototype.toString = function () {
+  return '(' + this.op.lexeme + ' ' + this.operand + ')'
 }
 
 UnaryExpression.prototype.analyze = function (context) {
@@ -15,10 +19,6 @@ UnaryExpression.prototype.analyze = function (context) {
     this.operand.type.assertInteger('The negation operator requires an integer operand', this.op)
     this.type = Type.INT
   }
-};
-
-UnaryExpression.prototype.toString = function () {
-  return '(' + this.op.lexeme + ' ' + this.operand + ')'
 }
 
 module.exports = UnaryExpression

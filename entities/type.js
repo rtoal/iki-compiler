@@ -1,21 +1,19 @@
 var error = require('../error')
 
-var allTypes = {}
+var cache = {}
 
 function Type(name) {
   this.name = name
-  allTypes[name] = this
+  cache[name] = this
 }
-
-// In Iki there are only two types
-exports.BOOL = Type.BOOL = new Type('bool')
-exports.INT = Type.INT = new Type('int')
-exports.forName = function (name) {return allTypes[name]}
-
 
 Type.prototype.toString = function () {
   return this.name
 }
+
+exports.BOOL = Type.BOOL = new Type('bool')
+exports.INT = Type.INT = new Type('int')
+exports.forName = function (name) {return cache[name]}
 
 Type.prototype.assertInteger = function (message, location) {
   if (this !== Type.INT) {

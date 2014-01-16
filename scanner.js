@@ -1,23 +1,23 @@
-var fs = require('fs');
+var fs = require('fs')
 var byline = require('byline')
 var error = require('./error')
 
 module.exports = function (filename, callback) {
-  var stream = byline(fs.createReadStream(filename, {encoding: 'utf8'}), {keepEmptyLines: true});
-  var tokens = [];
-  var linenumber = 0;
+  var stream = byline(fs.createReadStream(filename, {encoding: 'utf8'}), {keepEmptyLines: true})
+  var tokens = []
+  var linenumber = 0
   stream.on('readable', function () {
     scan(stream.read(), ++linenumber, tokens)
-  });
+  })
   stream.once('end', function () {
     callback(tokens)
-  });
+  })
 }
 
 function scan(line, linenumber, tokens) {
   if (!line) return
 
-  var start, pos = 0;
+  var start, pos = 0
 
   function emit(kind, lexeme) {
     tokens.push({kind: kind, lexeme: lexeme || kind, line: linenumber, col: start+1})
@@ -26,7 +26,7 @@ function scan(line, linenumber, tokens) {
   while (true) {
     // Skip spaces
     while (/\s/.test(line[pos])) pos++
-    start = pos;
+    start = pos
 
     // Nothing on the line
     if (pos >= line.length) break
@@ -45,9 +45,9 @@ function scan(line, linenumber, tokens) {
 
     // Reserved words or identifiers
     } else if (/[A-Za-z]/.test(line[pos])) {
-      while (/\w/.test(line[pos]) && pos < line.length) pos++;
+      while (/\w/.test(line[pos]) && pos < line.length) pos++
       var word = line.substring(start, pos)
-      if (/int|bool|var|read|write|while|loop|end|and|or|not|true|false/.test(word)) {
+      if (/^(?:int|bool|var|read|write|while|loop|end|and|or|not|true|false)$/.test(word)) {
         emit(word)
       } else {
         emit('ID', word)

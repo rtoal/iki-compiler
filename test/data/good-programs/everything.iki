@@ -4,6 +4,10 @@ var y: int;
 read y, x;
 while 4 - x <= 10 and 0 == 1 loop
   var x: int;
+  while false and 1>2 and 1<3 or false!=(1>=100) loop
+    var x: bool;
+    write x==x, y > 3 or x;
+  end;
   x = 1 + 2 - 3;
 end;
 
@@ -11,5 +15,4 @@ var test: bool; -- ok
 test = false and 8 == 2;
 
 write y;
-
 write y * (3 + 44), 6 - -8, test or not test;

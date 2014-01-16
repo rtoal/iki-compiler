@@ -13,8 +13,8 @@ var argv = require('optimist')
   .demand(1)
   .argv
 
-var scan = require('./scanner');
-var parse = require('./parser');
+var scan = require('./scanner')
+var parse = require('./parser')
 var generate = require('./generators/' + argv.target + 'generator')
 
 scan(argv._[0], function (tokens) {
@@ -28,7 +28,7 @@ scan(argv._[0], function (tokens) {
     return
   }
   if (argv.o) {
-    program.optimize()
+    program = program.optimize()
   }
   program.analyze()
   if (argv.i) {

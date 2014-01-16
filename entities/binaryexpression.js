@@ -2,15 +2,15 @@ var Type = require('./type')
 var error = require('../error')
 
 function BinaryExpression(op, left, right) {
-  this.op = op;
-  this.left = left;
-  this.right = right;
+  this.op = op
+  this.left = left
+  this.right = right
 }
 
 BinaryExpression.prototype.analyze = function (context) {
-  this.left.analyze(context);
-  this.right.analyze(context);
-  op = this.op.lexeme;
+  this.left.analyze(context)
+  this.right.analyze(context)
+  op = this.op.lexeme
   if (/<=?|>=?/.test(op)) {
     this.assertBothOperands(Type.INT)
     this.type = Type.BOOL
@@ -25,7 +25,7 @@ BinaryExpression.prototype.analyze = function (context) {
     this.assertBothOperands(Type.INT)
     this.type = Type.INT
   }
-};
+}
 
 BinaryExpression.prototype.toString = function () {
   return '(' + this.op.lexeme + ' ' + this.left + ' ' + this.right + ')'
