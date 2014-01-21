@@ -27,7 +27,7 @@ Stmt     ::=  'var' Id ':' Type
           |   Id '=' Exp
           |   'read' Id (',' Id)*
           |   'write' Exp (',' Exp)*
-          |   'while' Exp loop Block end
+          |   'while' Exp 'loop' Block 'end'
 Type     ::=  'int' | 'bool'
 Exp      ::=  Exp1 ('or' Exp1)*
 Exp1     ::=  Exp2 ('and' Exp2)*
