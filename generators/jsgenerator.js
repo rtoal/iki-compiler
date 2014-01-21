@@ -15,8 +15,7 @@ function emit(line) {
 }
 
 function makeOp(op) {
-  var translations = {'not': '!', 'and': '&&', 'or': '||'}
-  return translations[op] || op
+  return {not: '!', and: '&&', or: '||'}[op] || op
 }
 
 var makeVariable = (function () {

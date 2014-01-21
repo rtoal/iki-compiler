@@ -1,3 +1,4 @@
+-- This Iki program has close to all syntactic and semantic forms
 var x: int;
 var y: int;
 
