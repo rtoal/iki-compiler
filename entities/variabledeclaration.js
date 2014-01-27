@@ -8,7 +8,7 @@ VariableDeclaration.prototype.toString = function () {
 }
 
 VariableDeclaration.prototype.analyze = function (context) {
-  context.assertVariableNotAlreadyDeclared(this.id)
+  context.variableMustNotBeAlreadyDeclared(this.id)
   context.addVariable(this.id.lexeme, this)
 }
 

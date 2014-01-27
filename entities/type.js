@@ -15,21 +15,25 @@ exports.BOOL = Type.BOOL = new Type('bool')
 exports.INT = Type.INT = new Type('int')
 exports.forName = function (name) {return cache[name]}
 
-Type.prototype.assertInteger = function (message, location) {
+Type.prototype.mustBeInteger = function (message, location) {
   if (this !== Type.INT) {
     error(message, location)
   }
 }
 
-Type.prototype.assertBoolean = function (message, location) {
+Type.prototype.mustBeBoolean = function (message, location) {
   if (this !== Type.BOOL) {
     error(message, location)
   }
 }
 
-Type.prototype.assertCompatibleWith = function (sourceType, message, location) {
+Type.prototype.isCompatibleWith = function (otherType) {
   // In more sophisticated languages, comapatibility would be more complex
-  if (this !== sourceType) {
+  return this == otherType;  
+}
+
+Type.prototype.mustBeCompatibleWith = function (otherType, message, location) {
+  if (! this.isCompatibleWith(otherType)) {
     error(message, location)
   }
 }

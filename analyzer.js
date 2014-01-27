@@ -13,7 +13,7 @@ AnalysisContext.prototype.createChildContext = function () {
   return new AnalysisContext(this)
 }
 
-AnalysisContext.prototype.assertVariableNotAlreadyDeclared = function (token) {
+AnalysisContext.prototype.variableMustNotBeAlreadyDeclared = function (token) {
   if (this.symbolTable[token.lexeme]) {
     error('Variable ' + token.lexeme + ' already declared', token)
   }

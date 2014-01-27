@@ -1,12 +1,13 @@
 var should = require('should');
 var scan = require('../scanner')
+var error = require('../error')
 var i = require('util').inspect
 
 describe('The scanner', function () {
 
   it('scans the simplest program', function (done) {
     scan('test/data/good-programs/hello.iki', function (tokens) {
-      tokens.length.should.eql(3)
+      tokens.length.should.equal(3)
       i(tokens[0]).should.equal(i({kind:'write',lexeme:'write',line:1,col:1}))
       i(tokens[1]).should.equal(i({kind:'INTLIT',lexeme:'0',line:1,col:7}))
       i(tokens[2]).should.equal(i({kind:';',lexeme:';',line:1,col:8}))
@@ -15,13 +16,11 @@ describe('The scanner', function () {
   })
 
   it('properly handles comments and blank lines', function (done) {
-    scan('test/data/good-programs/simple.iki', function (tokens) {
-      tokens[0].line.should.eql(2)
-      tokens[0].col.should.eql(1)
-      tokens[8].line.should.eql(4)
-      tokens[8].col.should.eql(7)
-      tokens[15].line.should.eql(5)
-      tokens[15].col.should.eql(8)
+    scan('test/data/token-tests/comments-and-blank-lines', function (tokens) {
+      tokens.length.should.equal(3)
+      i(tokens[0]).should.equal(i({kind:'var',lexeme:'var',line:1,col:1}))
+      i(tokens[1]).should.equal(i({kind:'ID',lexeme:'x',line:3,col:3}))
+      i(tokens[2]).should.equal(i({kind:';',lexeme:';',line:5,col:7}))
       done()
     })
   })
@@ -76,4 +75,10 @@ describe('The scanner', function () {
       done()
     })
   })
-})
+
+  it('detects illegal characters', function (done) {
+    scan('test/data/token-tests/illegal-char', function () {
+      error.count.should.equal(1)
+      done()
+    })
+  })})

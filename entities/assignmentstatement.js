@@ -10,7 +10,7 @@ AssignmentStatement.prototype.toString = function () {
 AssignmentStatement.prototype.analyze = function (context) {
   this.target.analyze(context)
   this.source.analyze(context)
-  this.source.type.assertCompatibleWith(this.target.type, 'Type mismatch in assignment')
+  this.source.type.mustBeCompatibleWith(this.target.type, 'Type mismatch in assignment')
 }
 
 module.exports = AssignmentStatement

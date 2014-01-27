@@ -1,4 +1,4 @@
-module.exports = function(message, location) {
+function error(message, location) {
   if (location && location.line) {
     message = message.concat(' at line ', location.line)
     if (location.col) {
@@ -6,5 +6,9 @@ module.exports = function(message, location) {
     }
   }
   console.log('Error: ' + message)
-  process.exit(1)
+  error.count++
 }
+
+error.count = 0
+
+module.exports = error

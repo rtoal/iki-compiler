@@ -1,0 +1,3 @@
+-- okay to have % in comment
+-- not below
+read %x

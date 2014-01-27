@@ -63,7 +63,7 @@ var generator = {
 
   'ReadStatement': function (s) {
     s.varrefs.forEach(function (v) {
-      emit(util.format('scanf("%%d\\n", %s);', makeVariable(v.referent)))
+      emit(util.format('scanf("%%d\\n", &%s);', makeVariable(v.referent)))
     })
   },
 
@@ -84,6 +84,7 @@ var generator = {
   },
 
   'BooleanLiteral': function (literal) {
+    // Assume old-style C without a boolean type so just use 0 and 1
     return ['false','true'].indexOf(literal.toString())
   },
 

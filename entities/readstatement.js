@@ -7,7 +7,10 @@ ReadStatement.prototype.toString = function () {
 }
 
 ReadStatement.prototype.analyze = function (context) {
-  this.varrefs.forEach(function (v) {v.analyze(context)})
+  this.varrefs.forEach(function (v) {
+    v.analyze(context)
+    v.type.mustBeInteger('Variables in "read" statement must have type integer')
+  })
 }
 
 module.exports = ReadStatement
