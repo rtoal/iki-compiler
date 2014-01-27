@@ -1,9 +1,17 @@
-var fs = require('fs')
+/*
+ * Scanner module
+ *
+ *   var scanner = require('./scanner')
+ *
+ *   scan(stream, function (tokens) {processTheTokens(tokens)})
+ */
+
 var byline = require('byline')
 var error = require('./error')
 
-module.exports = function (filename, callback) {
-  var stream = byline(fs.createReadStream(filename, {encoding: 'utf8'}), {keepEmptyLines: true})
+module.exports = function (baseStream, callback) {
+  baseStream.on('error', function (err) {error(err)})
+  var stream = byline(baseStream, {keepEmptyLines: true})
   var tokens = []
   var linenumber = 0
   stream.on('readable', function () {
@@ -60,7 +68,7 @@ function scan(line, linenumber, tokens) {
     
     } else {
       error('Illegal character: ' + line[pos], {line: linenumber, col: pos+1})
-      return
+      pos++
     }
   }
 }
