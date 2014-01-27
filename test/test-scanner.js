@@ -7,20 +7,22 @@ describe('The scanner', function () {
 
   it('scans the simplest program', function (done) {
     scan('test/data/good-programs/hello.iki', function (tokens) {
-      tokens.length.should.equal(3)
+      tokens.length.should.equal(4)
       i(tokens[0]).should.equal(i({kind:'write',lexeme:'write',line:1,col:1}))
       i(tokens[1]).should.equal(i({kind:'INTLIT',lexeme:'0',line:1,col:7}))
       i(tokens[2]).should.equal(i({kind:';',lexeme:';',line:1,col:8}))
+      i(tokens[3]).should.equal(i({kind:'EOF',lexeme:'EOF'}))
       done()
     })
   })
 
   it('properly handles comments and blank lines', function (done) {
     scan('test/data/token-tests/comments-and-blank-lines', function (tokens) {
-      tokens.length.should.equal(3)
+      tokens.length.should.equal(4)
       i(tokens[0]).should.equal(i({kind:'var',lexeme:'var',line:1,col:1}))
       i(tokens[1]).should.equal(i({kind:'ID',lexeme:'x',line:3,col:3}))
       i(tokens[2]).should.equal(i({kind:';',lexeme:';',line:5,col:7}))
+      i(tokens[3]).should.equal(i({kind:'EOF',lexeme:'EOF'}))
       done()
     })
   })

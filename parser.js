@@ -1,3 +1,11 @@
+/*
+ * Parser module
+ *
+ *   var parse = require('./parser')
+ *
+ *   var program = parse(tokens)
+ */
+
 var scanner = require('./scanner')
 var error = require('./error')
 
@@ -19,7 +27,9 @@ var tokens
 
 module.exports = function (scanner_output) {
   tokens = scanner_output
-  return parseProgram()
+  var program = parseProgram()
+  match('EOF')
+  return program
 }
 
 function parseProgram() {

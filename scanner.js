@@ -1,16 +1,19 @@
 /*
  * Scanner module
  *
- *   var scanner = require('./scanner')
+ *   var scan = require('./scanner')
  *
- *   scan(stream, function (tokens) {processTheTokens(tokens)})
+ *   scan(filename, function (tokens) {processTheTokens(tokens)})
  */
 
+var fs = require('fs')
 var byline = require('byline')
 var error = require('./error')
 
-module.exports = function (baseStream, callback) {
+module.exports = function (filename, callback) {
+  var baseStream = fs.createReadStream(filename, {encoding: 'utf8'})
   baseStream.on('error', function (err) {error(err)})
+
   var stream = byline(baseStream, {keepEmptyLines: true})
   var tokens = []
   var linenumber = 0
@@ -18,6 +21,7 @@ module.exports = function (baseStream, callback) {
     scan(stream.read(), ++linenumber, tokens)
   })
   stream.once('end', function () {
+    tokens.push({kind: 'EOF', lexeme: 'EOF'})
     callback(tokens)
   })
 }

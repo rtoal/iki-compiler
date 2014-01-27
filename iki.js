@@ -12,13 +12,12 @@ var argv = require('optimist')
   .demand(1)
   .argv
 
-var fs = require('fs')
 var scan = require('./scanner')
 var parse = require('./parser')
 var generate = require('./generator')(argv.target)
 var error = require('./error')
 
-scan(fs.createReadStream(argv._[0], {encoding: 'utf8'}), function (tokens) {
+scan(argv._[0], function (tokens) {
   if (error.count > 0) return;
   if (argv.t) {
     tokens.forEach(function (t) {console.log(t)})
