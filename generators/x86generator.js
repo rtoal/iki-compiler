@@ -35,10 +35,12 @@ function gen(e) {
 var generator = {
 
   'Program': function (program) {
-    emit('\t.globl\tmain')
+    emit('\t.globl\t_main')
     emit('\t.text')
-    emit('main:')
+    emit('_main:')
+    emit('\tpush\t%rbp')
     gen(program.block)
+    emit('\tpop\t%rbp')
     emit('\tret')
     emit('\t.data')
     emit('READ:\t.ascii\t"%d\\0\\0"') // extra 0 for alignment
@@ -73,9 +75,9 @@ var generator = {
   'ReadStatement': function (s) {
     // Call scanf from C lib, format string in rdi, operand in rsi
     s.varrefs.forEach(function (v) {
-      emit("\tmovq\t" + gen(v.referent).address() + ", %rsi");
-      emit("\tmovq\t$READ, %rdi");
-      emit("\txorq\t%rax, %rax");
+      emit("\tmov\t" + gen(v.referent).address() + ", %rsi");
+      emit("\tlea\tREAD(%rip), %rdi");
+      emit("\txor\t%rax, %rax");
       emit("\tcall\tscanf");
     })
   },
@@ -83,10 +85,10 @@ var generator = {
   'WriteStatement': function (s) {
     // Call printf from C lib, format string in rdi, operand in rsi, rax=0
     s.expressions.forEach(function (e) {
-      emit("\tmovq\t" + gen(e) + ", %rsi");
-      emit("\tmovq\t$WRITE, %rdi");
-      emit("\txorq\t%rax, %rax");
-      emit("\tcall\tprintf");
+      emit("\tmov\t" + gen(e) + ", %rsi");
+      emit("\tlea\tWRITE(%rip), %rdi");
+      emit("\txor\t%rax, %rax");
+      emit("\tcall\t_printf");
     })
   },
 
