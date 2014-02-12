@@ -2,7 +2,6 @@ var util = require('util')
 var HashMap = require('hashmap').HashMap
 
 module.exports = function (program) {
-  // TODO - set up output stream
   gen(program)  
 }
 
@@ -19,7 +18,6 @@ function makeOp(op) {
 }
 
 var makeVariable = (function () {
-  // No need to synchronize because Node is single-threaded
   var lastId = 0
   var map = new HashMap()
   return function (v) {

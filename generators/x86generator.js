@@ -1,10 +1,9 @@
 var util = require('util')
 var HashMap = require('hashmap').HashMap
 
-var usedVariables = new HashMap()
+var usedVariables = {}
 
 module.exports = function (program) {
-  // TODO - set up output stream
   gen(program)  
 }
 
@@ -45,9 +44,9 @@ var generator = {
     emit('\t.data')
     emit('READ:\t.ascii\t"%d\\0\\0"') // extra 0 for alignment
     emit('WRITE:\t.ascii\t"%d\\n\\0"')
-    usedVariables.forEach(function (s) {
+    for (var s in usedVariables) {
       emit(s + ':\t.quad\t0');
-    })
+    }
   },
 
   'Block': function (block) {
@@ -58,12 +57,12 @@ var generator = {
   },
 
   'VariableDeclaration': function (v) {
-    // makeVariable(v)
+    // Intentionally empty
   },
 
   'AssignmentStatement': function (s) {
     source = gen(s.source)
-    target = gen(s.target)
+    destination = gen(s.target)
     if (source instanceof MemoryOperand && destination instanceof MemoryOperand) {
       var oldSource = source
       source = allocator.makeRegisterOperand()
@@ -75,7 +74,7 @@ var generator = {
   'ReadStatement': function (s) {
     // Call scanf from C lib, format string in rdi, operand in rsi
     s.varrefs.forEach(function (v) {
-      emit("\tmov\t" + gen(v.referent).address() + ", %rsi");
+      emit("\tmov\t" + gen(v) + ", %rsi");
       emit("\tlea\tREAD(%rip), %rdi");
       emit("\txor\t%rax, %rax");
       emit("\tcall\tscanf");
@@ -113,51 +112,50 @@ var generator = {
   },
 
   'VariableReference': function (v) {
-    var name = makeVariable(v.getReferent());
-    usedVariables.add(name);
+    var name = makeVariable(v.referent);
+    usedVariables[name] = true;
     return new MemoryOperand(name);
   },
 
   'UnaryExpression': function (e) {
     var operand = gen(e.operand)
-    var instruction = {'-':'neg', 'not':'not'}[e.op.lexeme]
-    if (! (operand instanceof RegisterOperand)) {
-      // TODO operand = move into register
+    var result
+    if (operand instanceof RegisterOperand) {
+      result = operand
+    } else {
+      result = allocator.makeRegisterOperand()
+      emitMove(operand, result)
     }
-    emit('\t' + instruction + '\t' + operand)
+    var instruction = {'-':'neg', 'not':'not'}[e.op.lexeme]
+    emit('\t' + instruction + '\t' + result)
+    return result
   },
 
   'BinaryExpression': function (e) {
-    // gen(e.left), makeOp(e.op.lexeme), gen(e.right))
+    var left = gen(e.left)
+    var right = gen(e.right)
+    var result
+    if (e.op.lexeme !== '/') {
+      if (left instanceof RegisterOperand) {
+        result = left
+      } else {
+        result = allocator.makeRegisterOperand()
+        emitMove(left, result)
+      }
+      switch (e.op.lexeme) {
+      case '+': emitBinary("addq", right, result); break
+      case '-': emitBinary("subq", right, result); break
+      case '*': emitBinary("mulq", right, result); break
+      }
+    } else {
+      result = allocator.makeRegisterOperandFor("rax");
+      emit("\tmovq\t" + left + ", " + result);
+      emit("\tcqto");
+      emit("\tidivq\t" + allocator.nonImmediate(right));
+    }
+    return result;
   }
 }
-
-
-
-//     private Operand generateBinaryExpression(BinaryExpression e) {
-//         Operand left = generateExpression(e.getLeft());
-//         Operand right = generateExpression(e.getRight());
-//         Operand result;
-//         if (e.getOperator() != BinaryExpression.Operator.DIVIDE) {
-//             if (left instanceof RegisterOperand) {
-//                 result = left;
-//             } else {
-//                 result = allocator.makeRegisterOperand();
-//                 emitMove(left, result);
-//             }
-//             switch (e.getOperator()) {
-//             case PLUS: emitBinary("addq", right, result); break;
-//             case MINUS: emitBinary("subq", right, result); break;
-//             case TIMES: emitBinary("mulq", right, result); break;
-//             }
-//         } else {
-//             result = allocator.makeRegisterOperandFor("rax");
-//             emit("\tmovq\t" + left + ", " + result);
-//             emit("\tcqto");
-//             emit("\tidivq\t" + allocator.nonImmediate(right));
-//         }
-//         return result;
-//     }
 
 function emitLabel(label) {
   emit(label + ':')
@@ -165,6 +163,10 @@ function emitLabel(label) {
 
 function emitMove(source, destination) {
   emit('\tmovq\t' + source + ', ' + destination)
+}
+
+function emitBinary(instruction, source, destination) {
+  emit('\t' + instruction + '\t' + source + ', ' + destination)
 }
 
 function emitJump(label) {
@@ -176,72 +178,72 @@ function emitJumpIfFalse(operand, label) {
   // with a comparison instruction and then a je instruction. The cmp instruction cannot
   // compare two immediate values, so if the operand is immediate we have to get a new
   // register for it.
-  emit('\tcmpq\t$0, ' + allocator.nonImmediate(operand));
-  emit('\tje\t' + label);
+
+  emit('\tcmpq\t$0, ' + allocator.nonImmediate(operand))
+  emit('\tje\t' + label)
 }
 
-function emitBinary(instruction, source, destination) {
-  emit('\t' + instruction + '\t' + source + ', ' + destination);
-}
-
-
-// A ridiculously simple register allocator. It thrown an exception thrown there are no free
-// registers available.  Also, it never allocates %rdx, since that is used for division.
-// You can't mark individual registers free; you can only call freeAllRegisters().
 
 function RegisterAllocator () {
+  // A ridiculously simple register allocator. It throws an exception if there are no free
+  // registers available.  Also, it never allocates %rdx, since that is used for division.
+  // And it never allocates %rdi or %rsi, as those are used for reading and writing.  Also,
+  // you can't mark individual registers free; you can only call freeAllRegisters().
+
   this.names = ['rax','rcx','r8','r9','r10','r11']
-  this.used = new HashMap()
+  this.bindings = new HashMap()
+}
+
+RegisterAllocator.prototype.makeRegisterOperand = function () {
+  // Returns a brand new register operand bound to the first available free register
+
+  var operand = new RegisterOperand("");
+  this.assignFreeRegisterTo(operand);
+  return operand;
 }
 
 RegisterAllocator.prototype.makeRegisterOperandFor = function (registerName) {
   // Returns a brand new register operand bound to a specific register.  If something is
   // already in that register, generates code to move it out and rebind to a new register.
-  var whatsAlreadyThere = used.get(registerName);
-  if (whatsAlreadyThere != null) {
-    this.assignRegister(whatsAlreadyThere);
-    emit("\tmovq\t%" + registerName + ", " + whatsAlreadyThere);
+
+  var existingRegisterOperand = this.bindings.get(registerName);
+  if (existingRegisterOperand) {
+    this.assignFreeRegisterTo(existingRegisterOperand);
+    emit("\tmovq\t%" + registerName + ", " + existingRegisterOperand);
   }
   var operand = new RegisterOperand(registerName);
-  this.used.put(registerName, operand);
-  return operand;
-}
-
-RegisterAllocator.prototype.makeRegisterOperand = function () {
-  // Returns a brand new register operand bound to the first available free register
-  var operand = new RegisterOperand("");
-  this.assignRegister(operand);
+  this.bindings.set(registerName, operand);
   return operand;
 }
 
 RegisterAllocator.prototype.nonImmediate = function (operand) {
   // If the operand is already non-immediate, return it, otherwise generate a new register
   // operand containing this value.
+
   if (operand instanceof ImmediateOperand) {
-    var newOperand = allocator.makeRegisterOperand();
+    var newOperand = this.makeRegisterOperand();
     emit("\tmovq\t" + operand + ", " + newOperand);
     return newOperand;
   }
   return operand;
 }
 
-//         /**
-//          * Changes the register value of an existing register operand to the first available
-//          * register.
-//          */
-RegisterAllocator.prototype.assignRegister = function(operand) {
-//             for (String register: names) {
-//                 if (!used.containsKey(register)) {
-//                     used.put(register, operand);
-//                     operand.register = register;
-//                     return;
-//                 }
-//             }
-//             throw new RuntimeException("No more registers available");
+RegisterAllocator.prototype.assignFreeRegisterTo = function (registerOperand) {
+  // Changes the register value of an existing register operand to the first available register.
+
+  for (var i = 0; i < this.names.length; i++) {
+    var register = this.names[i]
+    if (!this.bindings.has(register)) {
+      this.bindings.set(register, registerOperand);
+      registerOperand.register = register;
+      return;
+    }
+  }
+  throw new Error("No more registers available")
 }
 
 RegisterAllocator.prototype.freeAllRegisters = function () {
-  this.used.clear();
+  this.bindings.clear()
 }
 
 var allocator = new RegisterAllocator()
@@ -263,19 +265,14 @@ RegisterOperand.prototype.toString = function () {
   return '%' + this.register
 }
 
-// Assembly language memory operands. Although the x86 has a variety of addressing modes, Iki
-// programs require only direct operands. All Iki variables will be stored in a data section.
-// The assembly language name of a variable is its Iki name suffixed with a '$' (to prevent
-// clashes with assembly language reserved words).
-
 function MemoryOperand(variable) {
   this.variable = variable
 }
 
 MemoryOperand.prototype.address = function () {
-  return '$' + variable
+  return '$' + this.variable
 }
 
 MemoryOperand.prototype.toString = function () {
-  return variable
+  return this.variable
 }
