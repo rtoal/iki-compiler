@@ -1,3 +1,7 @@
+# Iki
+
+TODO - PICTURE
+
 This is a compiler for the little programming language called Iki. The compiler is a node.js app.  It's intented to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts. Parsing is done by hand with a simple recursive-descent parser.
 
 **This project is very much under development.**
@@ -13,6 +17,23 @@ iki.js [-t] [-a] [-o] [-i] [--target [js|c|x86]] filename
   -i goes up to semantic analysis, prints the semantic graph, then exits
   --target selects the output format (default is `js`)
 ```
+
+## The Iki Language
+
+Iki is a very simple language; there are no functions; all variables are global.  It's statically typed, at least.  Here are some example programs:
+
+```
+-- Not hello, world
+var x: int;
+
+x = 9 - 3 * 5; -- wow, assignment
+while false or 1 == x loop
+    write -x, x / 3;
+    read x;
+end;
+```
+
+TODO - other examples
 
 ## Grammar
 
