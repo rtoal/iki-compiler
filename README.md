@@ -1,12 +1,8 @@
-# Iki
+[Imgur](http://i.imgur.com/Jh8PLLP.png)
 
-TODO - PICTURE
+This is a compiler for the little programming language called Iki. The compiler is a node.js app.  It's intended to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts, since the backends are pretty trivial. Scanning and parsing are done by hand rather than with a parser generator, giving students an opportunity to learn about text processing and recursive descent parsing.
 
-This is a compiler for the little programming language called Iki. The compiler is a node.js app.  It's intented to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts. Parsing is done by hand with a simple recursive-descent parser.
-
-**This project is very much under development.**
-
-## Usage
+## The Compiler
 
 ```
 iki.js [-t] [-a] [-o] [-i] [--target [js|c|x86]] filename
@@ -18,22 +14,20 @@ iki.js [-t] [-a] [-o] [-i] [--target [js|c|x86]] filename
   --target selects the output format (default is `js`)
 ```
 
-## The Iki Language
+## The Language
 
-Iki is a very simple language; there are no functions; all variables are global.  It's statically typed, at least.  Here are some example programs:
+Iki is a very simple language; there are no functions; all variables are global.  It's statically typed, at least.  Here's a simple Iki program:
 
 ```
 -- Not hello, world
 var x: int;
 
-x = 9 - 3 * 5; -- wow, assignment
+x = 9 - 305 * 5; -- wow, assignment
 while false or 1 == x loop
     write -x, x / 3;
     read x;
 end;
 ```
-
-TODO - other examples
 
 ## Grammar
 
@@ -66,12 +60,16 @@ Given the file called _simple.iki_:
 ```
 -- Not hello, world
 var x: int;
+while true or 1 <= 5 loop
+  var y: bool;
+  read x;
+  write 9 - 3 * x;
+end;
 
-x = 9 - 3 * 5; -- wow, assignment
-write -x, true or 1 == x;
+write x;
 ```
 
-You can see the output of the scanner like so:
+You can see the output of the scanner using `-t`:
 
 ```
 $ ./iki.js -t simple.iki 
@@ -80,86 +78,106 @@ $ ./iki.js -t simple.iki
 { kind: ':', lexeme: ':', line: 2, col: 6 }
 { kind: 'int', lexeme: 'int', line: 2, col: 8 }
 { kind: ';', lexeme: ';', line: 2, col: 11 }
-{ kind: 'ID', lexeme: 'x', line: 4, col: 1 }
-{ kind: '=', lexeme: '=', line: 4, col: 3 }
-{ kind: 'INTLIT', lexeme: '9', line: 4, col: 5 }
-{ kind: '-', lexeme: '-', line: 4, col: 7 }
-{ kind: 'INTLIT', lexeme: '3', line: 4, col: 9 }
-{ kind: '*', lexeme: '*', line: 4, col: 11 }
-{ kind: 'INTLIT', lexeme: '5', line: 4, col: 13 }
+{ kind: 'while', lexeme: 'while', line: 3, col: 1 }
+{ kind: 'true', lexeme: 'true', line: 3, col: 7 }
+{ kind: 'or', lexeme: 'or', line: 3, col: 12 }
+{ kind: 'INTLIT', lexeme: '1', line: 3, col: 15 }
+{ kind: '<=', lexeme: '<=', line: 3, col: 17 }
+{ kind: 'INTLIT', lexeme: '5', line: 3, col: 20 }
+{ kind: 'loop', lexeme: 'loop', line: 3, col: 22 }
+{ kind: 'var', lexeme: 'var', line: 4, col: 3 }
+{ kind: 'ID', lexeme: 'y', line: 4, col: 7 }
+{ kind: ':', lexeme: ':', line: 4, col: 8 }
+{ kind: 'bool', lexeme: 'bool', line: 4, col: 10 }
 { kind: ';', lexeme: ';', line: 4, col: 14 }
-{ kind: 'write', lexeme: 'write', line: 5, col: 1 }
-{ kind: '-', lexeme: '-', line: 5, col: 7 }
+{ kind: 'read', lexeme: 'read', line: 5, col: 3 }
 { kind: 'ID', lexeme: 'x', line: 5, col: 8 }
-{ kind: ',', lexeme: ',', line: 5, col: 9 }
-{ kind: 'true', lexeme: 'true', line: 5, col: 11 }
-{ kind: 'or', lexeme: 'or', line: 5, col: 16 }
-{ kind: 'INTLIT', lexeme: '1', line: 5, col: 19 }
-{ kind: '==', lexeme: '==', line: 5, col: 21 }
-{ kind: 'ID', lexeme: 'x', line: 5, col: 24 }
-{ kind: ';', lexeme: ';', line: 5, col: 25 }
+{ kind: ';', lexeme: ';', line: 5, col: 9 }
+{ kind: 'write', lexeme: 'write', line: 6, col: 3 }
+{ kind: 'INTLIT', lexeme: '9', line: 6, col: 9 }
+{ kind: '-', lexeme: '-', line: 6, col: 11 }
+{ kind: 'INTLIT', lexeme: '3', line: 6, col: 13 }
+{ kind: '*', lexeme: '*', line: 6, col: 15 }
+{ kind: 'ID', lexeme: 'x', line: 6, col: 17 }
+{ kind: ';', lexeme: ';', line: 6, col: 18 }
+{ kind: 'end', lexeme: 'end', line: 7, col: 1 }
+{ kind: ';', lexeme: ';', line: 7, col: 4 }
+{ kind: 'write', lexeme: 'write', line: 9, col: 1 }
+{ kind: 'ID', lexeme: 'x', line: 9, col: 7 }
+{ kind: ';', lexeme: ';', line: 9, col: 8 }
+{ kind: 'EOF', lexeme: 'EOF' }
 ```
 
-And the abstract syntax tree like so:
+And the abstract syntax tree with `-a`:
 
 ```
-$ ./iki.js -a test/simple.iki 
-(Program (Block (Var :x int) (= x (- 9 (* 3 5))) (Write (- x) (or true (== 1 x)))))
-```
-
-And the semantic graph like so:
+$ ./iki.js -a simple.iki 
+(Program (Block (Var :x int) (While (or true (<= 1 5)) (Block (Var :y bool) (Read x) (Write (- 9 (* 3 x))))) (Write x)))
 
 ```
-$ ./iki.js -i test/simple.iki 
-3   Type {"name":"int"}
-2   VariableDeclaration {"id":"x","type":3}
-5   VariableReference {"token":"x","referent":2,"type":3}
-7   IntegerLiteral {"token":"9","type":3}
-9   IntegerLiteral {"token":"3","type":3}
-10  IntegerLiteral {"token":"5","type":3}
-8   BinaryExpression {"op":"*","left":9,"right":10,"type":3}
-6   BinaryExpression {"op":"-","left":7,"right":8,"type":3}
-4   AssignmentStatement {"target":5,"source":6}
-13  VariableReference {"token":"x","referent":2,"type":3}
-12  UnaryExpression {"op":"-","operand":13,"type":3}
-16  Type {"name":"bool"}
-15  BooleanLiteral {"name":"true","type":16}
-18  IntegerLiteral {"token":"1","type":3}
-19  VariableReference {"token":"x","referent":2,"type":3}
-17  BinaryExpression {"op":"==","left":18,"right":19,"type":16}
-14  BinaryExpression {"op":"or","left":15,"right":17,"type":16}
-11  WriteStatement {"expressions":[12,14]}
-1   Block {"statements":[2,4,11]}
-0   Program {"block":1}
+
+And the semantic graph with `-i`:
+
+```
+$ ./iki.js -i simple.iki 
+3 Type {"name":"int"}
+2 VariableDeclaration {"id":"x","type":3}
+7 Type {"name":"bool"}
+6 BooleanLiteral {"name":"true","type":7}
+9 IntegerLiteral {"token":"1","type":3}
+10 IntegerLiteral {"token":"5","type":3}
+8 BinaryExpression {"op":"<=","left":9,"right":10,"type":7}
+5 BinaryExpression {"op":"or","left":6,"right":8,"type":7}
+12 VariableDeclaration {"id":"y","type":7}
+14 VariableReference {"token":"x","referent":2,"type":3}
+13 ReadStatement {"varrefs":[14]}
+17 IntegerLiteral {"token":"9","type":3}
+19 IntegerLiteral {"token":"3","type":3}
+20 VariableReference {"token":"x","referent":2,"type":3}
+18 BinaryExpression {"op":"*","left":19,"right":20,"type":3}
+16 BinaryExpression {"op":"-","left":17,"right":18,"type":3}
+15 WriteStatement {"expressions":[16]}
+11 Block {"statements":[12,13,15]}
+4 WhileStatement {"condition":5,"body":11}
+22 VariableReference {"token":"x","referent":2,"type":3}
+21 WriteStatement {"expressions":[22]}
+1 Block {"statements":[2,4,21]}
+0 Program {"block":1}
 ```
 
-To translate the program to JavaScript:
+To translate the program to JavaScript, use `--target js` or no `--target` option at all:
 
 ```
 $ ./iki.js test/simple.iki 
 (function () {
     var _v1 = 0;
-    _v1 = (9 - (3 * 5));
-    console.log((- _v1));
-    console.log((true || (1 == _v1)));
+    while ((true || (1 <= 5))) {
+        var _v2 = false;
+        _v1 = prompt();
+        alert((9 - (3 * _v1)));
+    }
+    alert(_v1);
 }());
 ```
 
-And to C:
+You can translate to C with `--target c`:
 
 ```
 $ ./iki.js --target c test/simple.iki 
 #include <stdio.h>
 int main() {
-    var _v1 = 0;
-    _v1 = (9 - (3 * 5));
-    printf("%d\n", (- _v1));
-    printf("%d\n", (1 || (1 == _v1)));
+    int _v1 = 0;
+    while ((1 || (1 <= 5))) {
+        bool _v2 = 0;
+        scanf("%d\n", &_v1);
+        printf("%d\n", (9 - (3 * _v1)));
+    }
+    printf("%d\n", _v1);
     return 0;
 }
 ```
 
-And to x86:
+And to x86 assembly with `--target x86`.  As of now, the generated assembly language only works on a Mac.  I'm working on it!
 
 ```
 $ ./iki.js --target x86 test/simple.iki 
