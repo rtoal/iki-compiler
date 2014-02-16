@@ -1,4 +1,4 @@
-[Imgur](http://i.imgur.com/Jh8PLLP.png)
+![Iki imeage](http://i.imgur.com/Jh8PLLP.png)
 
 This is a compiler for the little programming language called Iki. The compiler is a node.js app.  It's intended to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts, since the backends are pretty trivial. Scanning and parsing are done by hand rather than with a parser generator, giving students an opportunity to learn about text processing and recursive descent parsing.
 
