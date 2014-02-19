@@ -301,10 +301,6 @@ function MemoryOperand(variable) {
   this.variable = variable
 }
 
-MemoryOperand.prototype.address = function () {
-  return '$' + this.variable
-}
-
 MemoryOperand.prototype.toString = function () {
-  return this.variable
+  return this.variable + '(%rip)'
 }
