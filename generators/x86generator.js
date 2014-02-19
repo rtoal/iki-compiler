@@ -76,7 +76,7 @@ var generator = {
       emit('mov', gen(v), '%rsi')
       emit('lea', 'READ(%rip)', '%rdi')
       emit('xor', '%rax', '%rax')
-      emit('call', 'scanf')
+      emit('call', '_scanf')
     })
   },
 
@@ -86,7 +86,7 @@ var generator = {
       emit('mov', gen(e), '%rsi')
       emit('lea', 'WRITE(%rip)', '%rdi')
       emit('xor', '%rax', '%rax')
-      emit('call', 'printf')
+      emit('call', '_printf')
     })
   },
 
@@ -149,7 +149,7 @@ var generator = {
       switch (e.op.lexeme) {
         case '+': emit("addq", right, result); break
         case '-': emit("subq", right, result); break
-        case '*': emit("mulq", right, result); break
+        case '*': emit("imulq", right, result); break
         case '<': emitComparison("setl", right, result); break
         case '<=': emitComparison("setle", right, result); break
         case '==': emitComparison("sete", right, result); break
@@ -184,8 +184,9 @@ function emitShortCircuit(operation, expression, destination) {
 
 function emitComparison(operation, right, destination) {
   emit("cmp", right, destination)
-  emit(operation, allocator.byteRegisterFor(destination.register))
-  emit("movsbq", allocator.byteRegisterFor(destination.register), destination)
+  var byteRegister = '%' + allocator.byteRegisterFor(destination.register)
+  emit(operation, byteRegister)
+  emit("movsbq", byteRegister, destination)
 }
 
 function emitJumpIfFalse(operand, label) {

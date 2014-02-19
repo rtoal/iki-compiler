@@ -181,9 +181,47 @@ And to x86 assembly with `--target x86`.  As of now, the generated assembly lang
 
 ```
 $ ./iki.js --target x86 test/simple.iki 
-.
-.
-.
-.
-.
+        .globl  _main
+        .text
+_main:
+        push    %rbp
+L1:
+        movq    $1, %rax
+        cmp     $0, %rax
+        jne     L3
+        movq    $1, %rcx
+        cmp     $5, %rcx
+        setle   %cl
+        movsbq  %cl, %rcx
+        mov     %rcx, %rax
+L3:
+        cmpq    $0, %rax
+        je      L2
+        mov     _v1(%rip), %rsi
+        lea     READ(%rip), %rdi
+        xor     %rax, %rax
+        call    _scanf
+        movq    $9, %rax
+        movq    $3, %rcx
+        imulq   _v1(%rip), %rcx
+        subq    %rcx, %rax
+        mov     %rax, %rsi
+        lea     WRITE(%rip), %rdi
+        xor     %rax, %rax
+        call    _printf
+        jmp     L1
+L2:
+        mov     _v1(%rip), %rsi
+        lea     WRITE(%rip), %rdi
+        xor     %rax, %rax
+        call    _printf
+        pop     %rbp
+        ret
+        .data
+READ:
+        .ascii  "%d\0\0"
+WRITE:
+        .ascii  "%d\n\0"
+_v1:
+        .quad   0
 ```
