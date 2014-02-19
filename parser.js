@@ -25,8 +25,8 @@ var UnaryExpression = require('./entities/unaryexpression')
 
 var tokens
 
-module.exports = function (scanner_output) {
-  tokens = scanner_output
+module.exports = function (scannerOutput) {
+  tokens = scannerOutput
   var program = parseProgram()
   match('EOF')
   return program
