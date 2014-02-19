@@ -7,10 +7,6 @@ module.exports = function (program) {
   gen(program)  
 }
 
-function emit(line) {
-  console.log(line)
-}
-
 var makeVariable = (function () {
   var lastId = 0
   var map = new HashMap()
@@ -34,26 +30,29 @@ function gen(e) {
 var generator = {
 
   'Program': function (program) {
-    emit('\t.globl\t_main')
-    emit('\t.text')
-    emit('_main:')
-    emit('\tpush\t%rbp')
+    emit('.globl', '_main')
+    emit('.text')
+    emitLabel('_main')
+    emit('push', '%rbp')
     gen(program.block)
-    emit('\tpop\t%rbp')
-    emit('\tret')
-    emit('\t.data')
-    emit('READ:\t.ascii\t"%d\\0\\0"') // extra 0 for alignment
-    emit('WRITE:\t.ascii\t"%d\\n\\0"')
+    emit('pop', '%rbp')
+    emit('ret')
+    emit('.data')
+    emitLabel('READ')
+    emit('.ascii', '"%d\\0\\0"') // extra 0 for alignment
+    emitLabel('WRITE')
+    emit('.ascii', '"%d\\n\\0"')
     for (var s in usedVariables) {
-      emit(s + ':\t.quad\t0');
+      emitLabel(s)
+      emit('.quad', '0');
     }
   },
 
   'Block': function (block) {
     block.statements.forEach(function (statement) {
       gen(statement)
+      allocator.freeAllRegisters()
     })
-    allocator.freeAllRegisters()
   },
 
   'VariableDeclaration': function (v) {
@@ -66,28 +65,28 @@ var generator = {
     if (source instanceof MemoryOperand && destination instanceof MemoryOperand) {
       var oldSource = source
       source = allocator.makeRegisterOperand()
-      emitMove(oldSource, source)
+      emit('mov', oldSource, source)
     }
-    emitMove(source, destination)
+    emit('mov', source, destination)
   },
 
   'ReadStatement': function (s) {
     // Call scanf from C lib, format string in rdi, operand in rsi
     s.varrefs.forEach(function (v) {
-      emit("\tmov\t" + gen(v) + ", %rsi");
-      emit("\tlea\tREAD(%rip), %rdi");
-      emit("\txor\t%rax, %rax");
-      emit("\tcall\tscanf");
+      emit('mov', gen(v), '%rsi')
+      emit('lea', 'READ(%rip)', '%rdi')
+      emit('xor', '%rax', '%rax')
+      emit('call', 'scanf')
     })
   },
 
   'WriteStatement': function (s) {
     // Call printf from C lib, format string in rdi, operand in rsi, rax=0
     s.expressions.forEach(function (e) {
-      emit("\tmov\t" + gen(e) + ", %rsi");
-      emit("\tlea\tWRITE(%rip), %rdi");
-      emit("\txor\t%rax, %rax");
-      emit("\tcall\t_printf");
+      emit('mov', gen(e), '%rsi')
+      emit('lea', 'WRITE(%rip)', '%rdi')
+      emit('xor', '%rax', '%rax')
+      emit('call', 'printf')
     })
   },
 
@@ -99,7 +98,7 @@ var generator = {
     emitJumpIfFalse(condition, bottom);
     allocator.freeAllRegisters();
     gen(s.body)
-    emitJump(top);
+    emit('jmp', top);
     emitLabel(bottom);
   },
 
@@ -118,59 +117,75 @@ var generator = {
   },
 
   'UnaryExpression': function (e) {
-    var operand = gen(e.operand)
-    var result
-    if (operand instanceof RegisterOperand) {
-      result = operand
-    } else {
-      result = allocator.makeRegisterOperand()
-      emitMove(operand, result)
-    }
+    var result = allocator.ensureRegister(gen(e.operand))
     var instruction = {'-':'neg', 'not':'not'}[e.op.lexeme]
-    emit('\t' + instruction + '\t' + result)
+    emit(instruction, result)
     return result
   },
 
   'BinaryExpression': function (e) {
     var left = gen(e.left)
+    var result = (e.op.lexeme === '/') ? 
+      allocator.makeRegisterOperandFor("rax") :
+      allocator.ensureRegister(left)
+
+    if (e.op.lexeme === 'and') {
+      emitShortCircuit('je', e, result)
+      return result
+    } 
+
+    if (e.op.lexeme === 'or') {
+      emitShortCircuit('jne', e, result)
+      return result
+    } 
+
     var right = gen(e.right)
-    var result
-    if (e.op.lexeme !== '/') {
-      if (left instanceof RegisterOperand) {
-        result = left
-      } else {
-        result = allocator.makeRegisterOperand()
-        emitMove(left, result)
-      }
-      switch (e.op.lexeme) {
-      case '+': emitBinary("addq", right, result); break
-      case '-': emitBinary("subq", right, result); break
-      case '*': emitBinary("mulq", right, result); break
-      }
+
+    if (e.op.lexeme === '/') {
+      emit("movq", left, result);
+      emit("cqto");
+      emit("idivq", allocator.nonImmediate(right));
     } else {
-      result = allocator.makeRegisterOperandFor("rax");
-      emit("\tmovq\t" + left + ", " + result);
-      emit("\tcqto");
-      emit("\tidivq\t" + allocator.nonImmediate(right));
+      switch (e.op.lexeme) {
+        case '+': emit("addq", right, result); break
+        case '-': emit("subq", right, result); break
+        case '*': emit("mulq", right, result); break
+        case '<': emitComparison("setl", right, result); break
+        case '<=': emitComparison("setle", right, result); break
+        case '==': emitComparison("sete", right, result); break
+        case '!=': emitComparison("setne", right, result); break
+        case '>=': emitComparison("setge", right, result); break
+        case '>': emitComparison("setg", right, result); break
+      }
     }
     return result;
   }
 }
 
 function emitLabel(label) {
-  emit(label + ':')
+  console.log(label + ':')
 }
 
-function emitMove(source, destination) {
-  emit('\tmovq\t' + source + ', ' + destination)
+function emit(op, x, y) {
+  var line = '\t' + op
+  if (x) line += '\t' + x
+  if (y) line += ', ' + y
+  console.log(line)
 }
 
-function emitBinary(instruction, source, destination) {
-  emit('\t' + instruction + '\t' + source + ', ' + destination)
+function emitShortCircuit(operation, expression, destination) {
+  var skip = makeLabel()
+  emit("cmp", "$0", destination)
+  emit(operation, skip)
+  var right = gen(expression.right)
+  emit("mov", right, destination)
+  emitLabel(skip)
 }
 
-function emitJump(label) {
-  emit('\tjmp\t' + label)
+function emitComparison(operation, right, destination) {
+  emit("cmp", right, destination)
+  emit(operation, allocator.byteRegisterFor(destination.register))
+  emit("movsbq", allocator.byteRegisterFor(destination.register), destination)
 }
 
 function emitJumpIfFalse(operand, label) {
@@ -179,8 +194,8 @@ function emitJumpIfFalse(operand, label) {
   // compare two immediate values, so if the operand is immediate we have to get a new
   // register for it.
 
-  emit('\tcmpq\t$0, ' + allocator.nonImmediate(operand))
-  emit('\tje\t' + label)
+  emit('cmpq', '$0', allocator.nonImmediate(operand))
+  emit('je', label)
 }
 
 
@@ -192,6 +207,10 @@ function RegisterAllocator () {
 
   this.names = ['rax','rcx','r8','r9','r10','r11']
   this.bindings = new HashMap()
+}
+
+RegisterAllocator.prototype.byteRegisterFor = function (registerName) {
+  return ['al', 'cl', 'r8b', 'r9b', 'r10b', 'r11b'][this.names.indexOf(registerName)]
 }
 
 RegisterAllocator.prototype.makeRegisterOperand = function () {
@@ -209,7 +228,7 @@ RegisterAllocator.prototype.makeRegisterOperandFor = function (registerName) {
   var existingRegisterOperand = this.bindings.get(registerName);
   if (existingRegisterOperand) {
     this.assignFreeRegisterTo(existingRegisterOperand);
-    emit("\tmovq\t%" + registerName + ", " + existingRegisterOperand);
+    emit("movq", "%" + registerName, existingRegisterOperand);
   }
   var operand = new RegisterOperand(registerName);
   this.bindings.set(registerName, operand);
@@ -222,7 +241,19 @@ RegisterAllocator.prototype.nonImmediate = function (operand) {
 
   if (operand instanceof ImmediateOperand) {
     var newOperand = this.makeRegisterOperand();
-    emit("\tmovq\t" + operand + ", " + newOperand);
+    emit("movq", operand + ", " + newOperand);
+    return newOperand;
+  }
+  return operand;
+}
+
+RegisterAllocator.prototype.ensureRegister = function (operand) {
+  // If the operand is already a register, return it, otherwise generate a new register
+  // operand containing this value.
+
+  if (! (operand instanceof RegisterOperand)) {
+    var newOperand = this.makeRegisterOperand();
+    emit("movq", operand, newOperand);
     return newOperand;
   }
   return operand;

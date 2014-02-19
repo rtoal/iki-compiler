@@ -1,3 +1,11 @@
+/*
+ * Generator module
+ *
+ *   var generate = require('./generator')(targetType)  // e.g. 'x86', 'c', 'js'
+ *
+ *   generate(program)
+ */
+
 var error = require('./error')
 
 module.exports = function (targetType) {
@@ -6,6 +14,5 @@ module.exports = function (targetType) {
   } catch (e) {
     error('No such target type: ' + targetType)
   }
-  // TODO needs an output stream
   return generator
 }
