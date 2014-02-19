@@ -5,7 +5,7 @@
   "dependencies": {
     "byline": "latest",
     "hashmap": "latest",
-    "optimist": "latest"
+    "yargs": "latest"
   },
   "devDependencies": {
     "mocha": "latest",
