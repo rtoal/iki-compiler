@@ -20,7 +20,7 @@ describe('The parser', function () {
     'detects error at empty program': 'empty',
     'detects errors at start of statement': 'bad-statement',
     'detects unknown types': 'bad-type',
-    'detected bad expressions in assignments': 'bad-expr-in-assignment',
+    'detects bad expressions in assignments': 'bad-expr-in-assignment',
     'detects a missing loop keyword': 'missing-loop',
     'detects a missing end keyword': 'missing-end',
     'detects missing commas in read statements': 'no-comma-in-read',

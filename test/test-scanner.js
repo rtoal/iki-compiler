@@ -83,4 +83,5 @@ describe('The scanner', function () {
       error.count.should.equal(1)
       done()
     })
-  })})
+  })
+})

@@ -15,6 +15,8 @@ BooleanLiteral.prototype.analyze = function (context) {
   this.type = Type.BOOL
 }
 
-exports.TRUE = new BooleanLiteral('true')
-exports.FALSE = new BooleanLiteral('false')
-exports.forName = function (name) {return cache[name]}
+module.exports = {
+  TRUE: new BooleanLiteral('true'),
+  FALSE: new BooleanLiteral('false'),
+  forName: function (name) {return cache[name]}
+}

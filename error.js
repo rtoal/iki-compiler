@@ -5,6 +5,7 @@
  *
  *   error('Something happened', {line: 7, col: 22})
  *   error('Something else happened', {line: 70, col: 1})
+ *   error('Illegal start of expression', token)
  *   error('That\'s strange')
  *   console.log(error.count)
  */
