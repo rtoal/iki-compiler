@@ -1,3 +1,5 @@
+var fs = require('fs')
+var path = require('path')
 var should = require('should')
 var scan = require('../scanner')
 var parse = require('../parser')
@@ -5,30 +7,20 @@ var error = require('../error')
 
 error.quiet = true
 
-function checkForSemanticErrors(check, baseFilename) {
-  it(check, function (done) {
-    scan('test/data/semantic-errors/' + baseFilename + '.iki', function (tokens) {
-      var preParseErrorCount = error.count
-      var program = parse(tokens)
-      var postParseErrorCount = error.count;
-      (postParseErrorCount-preParseErrorCount).should.equal(0)
-      program.analyze();
-      (error.count-preParseErrorCount).should.be.above(0)
-      done()
+var TEST_DIR = 'test/data/semantic-errors'
+
+describe('The analyzer detects an error for', function () {
+  fs.readdirSync(TEST_DIR).forEach(function (name) {
+    var check = name.replace(/-/g, ' ').replace(/\.iki$/, '')
+    it(check, function (done) {
+      scan(path.join(TEST_DIR, name), function (tokens) {
+        var priorErrorCount = error.count
+        var program = parse(tokens)
+        error.count.should.equal(priorErrorCount)
+        program.analyze()
+        error.count.should.be.above(priorErrorCount)
+        done()
+      })
     })
   })
-}
-
-describe('The parser', function () {
-
-  var checks = {
-    'detects undeclared variables': 'undeclared-variables',
-    'detects writing of booleans': 'write-bool'
-  };
-
-  for (var check in checks) {
-    if (checks.hasOwnProperty(check)) {
-      checkForSemanticErrors(check, checks[check])
-    }
-  }
 })
