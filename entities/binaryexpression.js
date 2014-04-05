@@ -1,5 +1,4 @@
 var Type = require('./type')
-var error = require('../error')
 
 function BinaryExpression(op, left, right) {
   this.op = op

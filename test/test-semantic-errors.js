@@ -3,6 +3,8 @@ var scan = require('../scanner')
 var parse = require('../parser')
 var error = require('../error')
 
+error.quiet = true
+
 function checkForSemanticErrors(check, baseFilename) {
   it(check, function (done) {
     scan('test/data/semantic-errors/' + baseFilename + '.iki', function (tokens) {

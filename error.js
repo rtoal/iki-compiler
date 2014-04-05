@@ -4,10 +4,11 @@
  *   var error = require('./error')
  *
  *   error('Something happened', {line: 7, col: 22})
- *   error('Something else happened', {line: 70, col: 1})
  *   error('Illegal start of expression', token)
+ *   error.quiet = true
  *   error('That\'s strange')
- *   console.log(error.count)
+ *   error('Type mismatch', {line: 100})
+ *   console.log(error.count)   // 3
  */
 
 function error(message, location) {
@@ -17,9 +18,13 @@ function error(message, location) {
       message = message.concat(', column ', location.col)
     }
   }
-  console.log('Error: ' + message)
+  if (!error.quiet) {
+    console.log('Error: ' + message)
+  }
   error.count++
 }
+
+error.quiet = false
 
 error.count = 0
 

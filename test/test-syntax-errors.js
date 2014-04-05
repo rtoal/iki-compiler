@@ -3,6 +3,8 @@ var scan = require('../scanner')
 var parse = require('../parser')
 var error = require('../error')
 
+error.quiet = true
+
 function checkForParseErrors(check, baseFilename) {
   it(check, function (done) {
     scan('test/data/syntax-errors/' + baseFilename + '.iki', function (tokens) {
@@ -14,20 +16,20 @@ function checkForParseErrors(check, baseFilename) {
   })
 }
 
-describe('The parser', function () {
+describe('The parser detects an error for', function () {
 
   var checks = {
-    'detects error at empty program': 'empty',
-    'detects errors at start of statement': 'bad-statement',
-    'detects unknown types': 'bad-type',
-    'detects bad expressions in assignments': 'bad-expr-in-assignment',
-    'detects a missing loop keyword': 'missing-loop',
-    'detects a missing end keyword': 'missing-end',
-    'detects missing commas in read statements': 'no-comma-in-read',
-    'detects missing commas in write statements': 'no-comma-in-write',
-    'detects unbalanced parentheses': 'unbalanced-parens',
-    'detects a missing semicolon after a variable declaration': 'no-semicolon',
-    'detects multiple relational operators without parentheses': 'multiple-relationals'
+    'an empty program': 'empty',
+    'an illegal of statement': 'bad-statement',
+    'an unknown type': 'bad-type',
+    'bad expressions in assignments': 'bad-expr-in-assignment',
+    'a missing loop keyword': 'missing-loop',
+    'a missing end keyword': 'missing-end',
+    'missing commas in read statements': 'no-comma-in-read',
+    'missing commas in write statements': 'no-comma-in-write',
+    'unbalanced parentheses': 'unbalanced-parens',
+    'a missing semicolon after a variable declaration': 'no-semicolon',
+    'multiple relational operators without parentheses': 'multiple-relationals'
   };
 
   for (var check in checks) {
