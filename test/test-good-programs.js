@@ -11,8 +11,8 @@ function checkFrontEndHasNoErrors(baseFilename) {
   it('should compile ' + baseFilename + ' without errors', function (done) {
     scan(path.join(TEST_DIR, baseFilename), function (tokens) {
       var priorErrorCount = error.count
-      parse(tokens).analyze();
-      (error.count-priorErrorCount).should.eql(0)
+      parse(tokens).analyze()
+      error.count.should.eql(priorErrorCount)
       done()
     })
   })
