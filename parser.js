@@ -192,22 +192,22 @@ function parseExp6() {
   }
 }
 
-function at(symbol) {
+function at(kind) {
   if (tokens.length === 0) {
     return false
-  } else if (Array.isArray(symbol)) {
-    return symbol.some(function (s) {return at(s)})
+  } else if (Array.isArray(kind)) {
+    return kind.some(at)
   } else {
-    return symbol === tokens[0].kind
+    return kind === tokens[0].kind
   }  
 }
 
-function match(symbol) {
+function match(kind) {
   if (tokens.length === 0) {
-    error('Unexpected end of input')
-  } else if (symbol === undefined || symbol === tokens[0].kind) {
+    error('Unexpected end of source program')
+  } else if (kind === undefined || kind === tokens[0].kind) {
     return tokens.shift()
   } else {
-    error('Expected ' + symbol + ' but found ' + tokens[0].kind, tokens[0])
+    error('Expected ' + kind + ' but found ' + tokens[0].kind, tokens[0])
   }
 }
