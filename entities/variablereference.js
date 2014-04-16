@@ -11,4 +11,8 @@ VariableReference.prototype.analyze = function (context) {
   this.type = this.referent.type
 }
 
+VariableReference.prototype.optimize = function () {
+  return this
+}
+
 module.exports = VariableReference

@@ -1,15 +1,19 @@
 var Type = require('./type')
 
-function IntegerLiteral(token) {
-  this.token = token
+function IntegerLiteral(value) {
+  this.value = value
 }
 
 IntegerLiteral.prototype.toString = function () {
-  return this.token.lexeme
+  return this.value
 }
 
 IntegerLiteral.prototype.analyze = function (context) {
   this.type = Type.INT
+}
+
+IntegerLiteral.prototype.optimize = function () {
+  return this
 }
 
 module.exports = IntegerLiteral

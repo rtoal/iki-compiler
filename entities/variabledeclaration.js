@@ -14,6 +14,10 @@ VariableDeclaration.prototype.analyze = function (context) {
   context.addVariable(this.id.lexeme, this)
 }
 
+VariableDeclaration.prototype.optimize = function () {
+  return this
+}
+
 VariableDeclaration.ARBITRARY = new VariableDeclaration('<arbitrary>', Type.ARBITRARY)
 
 module.exports = VariableDeclaration

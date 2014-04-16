@@ -1,10 +1,11 @@
 var Type = require('./type')
 
-var cache = {}
-
 function BooleanLiteral(name) {
-  this.name = name
-  cache[name] = this
+  this.name = "" + name
+}
+
+BooleanLiteral.prototype.value = function () {
+  return this.name === 'true'
 }
 
 BooleanLiteral.prototype.toString = function () {
@@ -15,8 +16,8 @@ BooleanLiteral.prototype.analyze = function (context) {
   this.type = Type.BOOL
 }
 
-module.exports = {
-  TRUE: new BooleanLiteral('true'),
-  FALSE: new BooleanLiteral('false'),
-  forName: function (name) {return cache[name]}
+BooleanLiteral.prototype.optimize = function () {
+  return this
 }
+
+module.exports = BooleanLiteral

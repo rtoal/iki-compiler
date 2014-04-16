@@ -13,4 +13,9 @@ WriteStatement.prototype.analyze = function (context) {
   })
 }
 
+WriteStatement.prototype.optimize = function () {
+  this.expressions = this.expressions.map(function (e) {return e.optimize()})
+  return this
+}
+
 module.exports = WriteStatement

@@ -13,4 +13,10 @@ Block.prototype.analyze = function (context) {
   })
 }
 
+Block.prototype.optimize = function () {
+  this.statements = this.statements.map(function (s) {return s.optimize()})
+  this.statements = this.statements.filter(function (s) {return s !== null})
+  return this
+}
+
 module.exports = Block

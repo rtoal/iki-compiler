@@ -177,9 +177,9 @@ function parseExp5() {
 
 function parseExp6() {
   if (at(['true','false'])) {
-    return new BooleanLiteral.forName(match().lexeme)
+    return new BooleanLiteral(match().lexeme)
   } else if (at('INTLIT')) {
-    return new IntegerLiteral(match())
+    return new IntegerLiteral(match().lexeme)
   } else if (at('ID')) {
     return new VariableReference(match())
   } else if (at('(')) {

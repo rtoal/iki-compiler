@@ -13,4 +13,8 @@ ReadStatement.prototype.analyze = function (context) {
   })
 }
 
+ReadStatement.prototype.optimize = function () {
+  return this
+}
+
 module.exports = ReadStatement

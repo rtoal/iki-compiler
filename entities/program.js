@@ -14,7 +14,7 @@ Program.prototype.analyze = function () {
 }
 
 Program.prototype.optimize = function () {
-  console.log('Optimization is not yet implemented')
+  this.block = this.block.optimize()
   return this
 }
 
