@@ -9,16 +9,16 @@ var indentPadding = 4
 var indentLevel = 0
 
 function emit(line) {
-  var pad = indentPadding * indentLevel;
+  var pad = indentPadding * indentLevel
   console.log(Array(pad+1).join(' ') + line)
 }
 
 function makeOp(op) {
-  return {not: '!', and: '&&', or: '||'}[op] || op
+  return {not: '!', and: '&&', or: '||', '==': '===', '!=': '!=='}[op] || op
 }
 
 var makeVariable = (function () {
-  var lastId = 0;
+  var lastId = 0
   var map = new HashMap()
   return function (v) {
     if (!map.has(v)) map.set(v, ++lastId)
@@ -48,7 +48,7 @@ var generator = {
   },
 
   'VariableDeclaration': function (v) {
-    var initializer = {'int': '0', 'bool': 'false'}[v.type];
+    var initializer = {'int': '0', 'bool': 'false'}[v.type]
     emit(util.format('var %s = %s;', makeVariable(v), initializer))
   },
 
@@ -70,8 +70,8 @@ var generator = {
 
   'WhileStatement': function (s) {
     emit('while (' + gen(s.condition) + ') {')
-    gen(s.body);
-    emit('}');
+    gen(s.body)
+    emit('}')
   },
 
   'IntegerLiteral': function (literal) {
