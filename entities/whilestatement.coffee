@@ -5,7 +5,7 @@ class WhileStatement
   constructor: (@condition, @body) ->
 
   toString: () ->
-    "While #{@condition} #{@body})"
+    "(While #{@condition} #{@body})"
 
   analyze: (context) ->
     @condition.analyze context

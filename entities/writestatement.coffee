@@ -3,7 +3,7 @@ class WriteStatement
   constructor: (@expressions) ->
 
   toString: ->
-    "Write #{this.expressions.join(' ')})"
+    "(Write #{this.expressions.join(' ')})"
 
   analyze: (context) ->
     for e in @expressions
