@@ -23,10 +23,10 @@ class AnalysisContext
     variable = @symbolTable[token.lexeme]
     if variable
       variable
-    else if not this.parent
+    else if not @parent
       error "Variable #{token.lexeme} not found", token
       VariableDeclaration.ARBITRARY
     else
-      this.parent.lookupVariable token
+      @parent.lookupVariable token
 
 exports.initialContext = AnalysisContext.initialContext

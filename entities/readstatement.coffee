@@ -3,7 +3,7 @@ class ReadStatement
   constructor: (@varrefs) ->
 
   toString: ->
-    "(Read #{this.varrefs.join(' ')})"
+    "(Read #{@varrefs.join(' ')})"
 
   analyze: (context) ->
     for v in @varrefs

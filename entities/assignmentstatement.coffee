@@ -5,7 +5,7 @@ class AssignmentStatement
   constructor: (@target, @source) ->
 
   toString: ->
-    "(= #{this.target} #{this.source})"
+    "(= #{@target} #{@source})"
 
   analyze: (context) ->
     @target.analyze context

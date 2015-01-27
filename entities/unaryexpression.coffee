@@ -7,17 +7,17 @@ class UnaryExpression
   constructor: (@op, @operand) ->
 
   toString: ->
-    "(#{this.op.lexeme} #{this.operand})"
+    "(#{@op.lexeme} #{@operand})"
 
   analyze: (context) ->
     @operand.analyze context
-    if @op.lexeme is 'not'
-      @operand.type.mustBeBoolean 'The "not" operator requires a boolean operand', @op
-      @type = Type.BOOL
-    else
-      # this.op.lexeme === '-'
-      @operand.type.mustBeInteger 'The "negation" operator requires an integer operand', @op
-      this.type = Type.INT
+    switch @op.lexeme
+      when 'not'
+        @operand.type.mustBeBoolean 'The "not" operator requires a boolean operand', @op
+        @type = Type.BOOL
+      when '-'
+        @operand.type.mustBeInteger 'The "negation" operator requires an integer operand', @op
+        @type = Type.INT
 
   optimize: ->
     @operand = @operand.optimize()
@@ -25,6 +25,7 @@ class UnaryExpression
       new BooleanLiteral(not @operand.value)
     else if @op.lexeme is '-' and @operand instanceof IntegerLiteral
       new IntegerLiteral(- @operand.value)
-    this
+    else
+      this
 
 module.exports = UnaryExpression

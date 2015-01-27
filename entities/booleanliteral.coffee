@@ -6,7 +6,7 @@ class BooleanLiteral
     @name = "#{name}"
 
   value: ->
-    this.name is 'true'
+    @name is 'true'
 
   toString: -> @name
 
