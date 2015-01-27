@@ -1,11 +1,11 @@
-![Iki imeage](http://i.imgur.com/JRTmR2A.png)
+![Iki image](http://i.imgur.com/JRTmR2A.png)
 
-This is a compiler for the little programming language called Iki. The compiler is a node.js app.  It's intended to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts, since the backends are pretty trivial. Scanning and parsing are done by hand rather than with a parser generator, giving students an opportunity to learn about text processing and recursive descent parsing.
+This is a compiler for the little programming language called Iki. The compiler is a Node.js commandline application written in CoffeeScript. It's intended to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts, since the backends are pretty trivial. Scanning and parsing are done by hand rather than with a parser generator, giving students an opportunity to learn about text processing and recursive descent parsing.
 
 ## The Compiler
 
 ```
-iki.js [-t] [-a] [-o] [-i] [--target [js|c|x86]] filename
+coffee iki.coffee [-t] [-a] [-o] [-i] [--target [js|c|x86]] filename
 
   -t scans, prints the tokens, then exits
   -a scans, parses, prints the abstract syntax tree, then exits
@@ -16,7 +16,7 @@ iki.js [-t] [-a] [-o] [-i] [--target [js|c|x86]] filename
 
 ## The Language
 
-Iki is a very simple language; there are no functions; all variables are global.  It's statically typed, at least.  Here's a simple Iki program:
+Iki is a very simple language; there are no functions; all variables are global.  It's statically typed, at least. Here's a simple Iki program:
 
 ```
 -- Not hello, world
@@ -31,16 +31,16 @@ end;
 
 ## Grammar
 
-Iki programs are free-format.  Comments start with `--` and extend to the end of the line.  The predefined tokens are `Intlit`, a sequence of one or more Basic Latin decimal digits, and `Id`, a sequence of Basic Latin letters, Basic Latin decimal digits, and underscores, beginning with a letter, that is not a reserved word (`int`, `bool`, `var`, `read`, `write`, `while`, `loop`, `end`, `and`, `or`, `not`, `true`, `false`).  Tokenization uses maximal much, where the space characters are U+0009 through U+000D, U+2028, U+2029, and any character in the Unicode Zs category.
+Iki programs are free-format.  Comments start with `--` and extend to the end of the line.  The predefined tokens are `intlit`, a sequence of one or more Basic Latin decimal digits, and `id`, a sequence of Basic Latin letters, Basic Latin decimal digits, and underscores, beginning with a letter, that is not a reserved word (`int`, `bool`, `var`, `read`, `write`, `while`, `loop`, `end`, `and`, `or`, `not`, `true`, `false`).  Tokenization uses maximal much, where the space characters are U+0009 through U+000D, U+0020, U+2028, U+2029, and any character in the Unicode `Zs` category.
 
 The macrosyntax is given below, in a form that can be directly input into Gunther Rademacher's [Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui)
 
 ```
 Program  ::=  Block
 Block    ::=  (Stmt ';')+
-Stmt     ::=  'var' Id ':' Type
-          |   Id '=' Exp
-          |   'read' Id (',' Id)*
+Stmt     ::=  'var' id ':' Type
+          |   id '=' Exp
+          |   'read' id (',' id)*
           |   'write' Exp (',' Exp)*
           |   'while' Exp 'loop' Block 'end'
 Type     ::=  'int' | 'bool'
@@ -50,12 +50,12 @@ Exp2     ::=  Exp3 (('<' | '<=' | '==' | '!=' | '>=' | '>') Exp3)?
 Exp3     ::=  Exp4 ([+-] Exp4)*
 Exp4     ::=  Exp5 ([*/] Exp5)*
 Exp5     ::=  ('not' | '-')? Exp6
-Exp6     ::=  'true' | 'false' | Intlit | Id | '(' Exp ')'
+Exp6     ::=  'true' | 'false' | intlit | id | '(' Exp ')'
 ```
 
 ## Examples
 
-Given the file called _simple.iki_:
+Given the following file called _simple.iki_:
 
 ```
 -- Not hello, world
@@ -72,7 +72,7 @@ write x;
 You can see the output of the scanner using `-t`:
 
 ```
-$ ./iki.js -t simple.iki 
+$ ./iki.coffee -t simple.iki
 { kind: 'var', lexeme: 'var', line: 2, col: 1 }
 { kind: 'ID', lexeme: 'x', line: 2, col: 5 }
 { kind: ':', lexeme: ':', line: 2, col: 6 }
@@ -111,7 +111,7 @@ $ ./iki.js -t simple.iki
 And the abstract syntax tree with `-a`:
 
 ```
-$ ./iki.js -a simple.iki 
+$ ./iki.coffee -a simple.iki
 (Program (Block (Var :x int) (While (or true (<= 1 5)) (Block (Var :y bool) (Read x) (Write (- 9 (* 3 x))))) (Write x)))
 
 ```
@@ -119,7 +119,7 @@ $ ./iki.js -a simple.iki
 And the semantic graph with `-i`:
 
 ```
-$ ./iki.js -i simple.iki 
+$ ./iki.coffee -i simple.iki
 3 Type {"name":"int"}
 2 VariableDeclaration {"id":"x","type":3}
 7 Type {"name":"bool"}
@@ -148,7 +148,7 @@ $ ./iki.js -i simple.iki
 To translate the program to JavaScript, use `--target js` or no `--target` option at all:
 
 ```
-$ ./iki.js test/simple.iki 
+$ ./iki.coffee simple.iki
 (function () {
     var _v1 = 0;
     while ((true || (1 <= 5))) {
@@ -163,7 +163,7 @@ $ ./iki.js test/simple.iki
 You can translate to C with `--target c`:
 
 ```
-$ ./iki.js --target c test/simple.iki 
+$ ./iki.coffee --target c simple.iki
 #include <stdio.h>
 int main() {
     int _v1 = 0;
@@ -177,10 +177,10 @@ int main() {
 }
 ```
 
-And to x86 assembly with `--target x86`.  As of now, the generated assembly language only works on a Mac.  I'm working on it!
+And to x86 assembly with `--target x86`. As of now, the generated assembly language only works on a Mac.  Is your favorite platform missing? Implement it and send a pull request!
 
 ```
-$ ./iki.js --target x86 test/simple.iki 
+$ ./iki.coffee --target x86 simple.iki
         .globl  _main
         .text
 _main:
@@ -224,4 +224,12 @@ WRITE:
         .ascii  "%d\n\0"
 _v1:
         .quad   0
+```
+
+## For Developers
+
+Unit tests use mocha and should. Because `mocha` does not support CoffeeScript out of the box, run the tests with:
+
+```
+mocha --compilers coffee:coffee-script/register
 ```
