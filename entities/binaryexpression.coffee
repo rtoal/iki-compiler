@@ -32,7 +32,7 @@ class BinaryExpression
   optimize: ->
     @left = @left.optimize()
     @right = @right.optimize()
-    if @left instanceof IntegerLiteral and right instanceof IntegerLiteral
+    if @left instanceof IntegerLiteral and @right instanceof IntegerLiteral
       return foldIntegerConstants @op.lexeme, +@left.value, +@right.value
     else if @left instanceof BooleanLiteral and @right instanceof BooleanLiteral
       return foldBooleanConstants @op.lexeme, @left.value(), @right.value()
