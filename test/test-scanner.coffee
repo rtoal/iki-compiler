@@ -1,34 +1,30 @@
-var should = require('should');
-var scan = require('../scanner')
-var error = require('../error')
-var i = require('util').inspect
+should = require('should');
+scan = require('../scanner')
+error = require('../error')
+i = require('util').inspect
 
-describe('The scanner', function () {
+describe 'The scanner', () ->
 
-  it('scans the simplest program', function (done) {
-    scan('test/data/good-programs/hello.iki', function (tokens) {
+  it 'scans the simplest program', (done) ->
+    scan 'test/data/good-programs/hello.iki', (tokens) ->
       tokens.length.should.equal(4)
       i(tokens[0]).should.equal(i({kind:'write',lexeme:'write',line:1,col:1}))
       i(tokens[1]).should.equal(i({kind:'INTLIT',lexeme:'0',line:1,col:7}))
       i(tokens[2]).should.equal(i({kind:';',lexeme:';',line:1,col:8}))
       i(tokens[3]).should.equal(i({kind:'EOF',lexeme:'EOF'}))
       done()
-    })
-  })
 
-  it('properly handles comments and blank lines', function (done) {
-    scan('test/data/token-tests/comments-and-blank-lines', function (tokens) {
+  it 'properly handles comments and blank lines', (done) ->
+    scan 'test/data/token-tests/comments-and-blank-lines', (tokens) ->
       tokens.length.should.equal(4)
       i(tokens[0]).should.equal(i({kind:'var',lexeme:'var',line:1,col:1}))
       i(tokens[1]).should.equal(i({kind:'ID',lexeme:'x',line:3,col:3}))
       i(tokens[2]).should.equal(i({kind:';',lexeme:';',line:5,col:7}))
       i(tokens[3]).should.equal(i({kind:'EOF',lexeme:'EOF'}))
       done()
-    })
-  })
-  
-  it('reads symbolic tokens properly', function (done) {
-    scan('test/data/token-tests/symbols', function (tokens) {
+
+  it 'reads symbolic tokens properly', (done) ->
+    scan 'test/data/token-tests/symbols', (tokens) ->
       i(tokens[0]).should.equal(i({kind:'<=',lexeme:'<=',line:1,col:1}))
       i(tokens[1]).should.equal(i({kind:'<',lexeme:'<',line:1,col:3}))
       i(tokens[2]).should.equal(i({kind:',',lexeme:',',line:1,col:4}))
@@ -42,11 +38,9 @@ describe('The scanner', function () {
       i(tokens[10]).should.equal(i({kind:'(',lexeme:'(',line:1,col:15}))
       i(tokens[11]).should.equal(i({kind:')',lexeme:')',line:1,col:16}))
       done()
-    })
-  })
 
-  it('distinguishes reserved words and identifiers', function (done) {
-    scan('test/data/token-tests/words', function (tokens) {
+  it 'distinguishes reserved words and identifiers', (done) ->
+    scan 'test/data/token-tests/words', (tokens) ->
       i(tokens[0]).should.equal(i({kind:'ID',lexeme:'whilexy',line:1,col:1}))
       i(tokens[1]).should.equal(i({kind:'while',lexeme:'while',line:1,col:9}))
       i(tokens[2]).should.equal(i({kind:'ID',lexeme:'whil',line:1,col:15}))
@@ -65,23 +59,16 @@ describe('The scanner', function () {
       i(tokens[21]).should.equal(i({kind:'true',lexeme:'true',line:1,col:76}))
       i(tokens[23]).should.equal(i({kind:'false',lexeme:'false',line:1,col:81}))
       done()
-    })
-  })
 
-  it('scans numbers properly', function (done) {
-    scan('test/data/token-tests/numbers', function (tokens) {
+  it 'scans numbers properly', (done) ->
+    scan 'test/data/token-tests/numbers', (tokens) ->
       i(tokens[0]).should.equal(i({kind:'ID',lexeme:'loop89x7',line:1,col:1}))
       i(tokens[2]).should.equal(i({kind:'INTLIT',lexeme:'222289',line:1,col:10}))
       i(tokens[3]).should.equal(i({kind:'ID',lexeme:'while9',line:1,col:16}))
       i(tokens[4]).should.equal(i({kind:'INTLIT',lexeme:'02',line:1,col:23}))
       done()
-    })
-  })
 
-  it('detects illegal characters', function (done) {
-    scan('test/data/token-tests/illegal-char', function () {
+  it 'detects illegal characters', (done) ->
+    scan 'test/data/token-tests/illegal-char', (tokens) ->
       error.count.should.equal(1)
       done()
-    })
-  })
-})
