@@ -9,10 +9,12 @@ byline = require 'byline'
 {XRegExp} = require 'xregexp'
 error = require './error'
 
+
 LETTER = XRegExp '[\\p{L}]'
 DIGIT = XRegExp '[\\p{Nd}]'
 WORD_CHAR = XRegExp '[\\p{L}\\p{Nd}_]'
 KEYWORDS = /^(?:int|bool|var|read|write|while|loop|end|and|or|not|true|false)$/
+
 
 module.exports = (filename, callback) ->
   baseStream = fs.createReadStream filename, {encoding: 'utf8'}
@@ -35,7 +37,7 @@ scan = (line, linenumber, tokens) ->
   emit = (kind, lexeme) ->
     tokens.push {kind, lexeme: lexeme or kind, line: linenumber, col: start+1}
 
-  while true
+  loop
     # Skip spaces
     pos++ while /\s/.test line[pos]
     start = pos
