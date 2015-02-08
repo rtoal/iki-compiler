@@ -14,7 +14,7 @@ argv = require 'yargs'
 
 scan = require './scanner'
 parse = require './parser'
-generate = (require './generator')(argv.target)
+generate = (require './generator') argv.target
 error = require './error'
 
 scan argv._[0], (tokens) ->
