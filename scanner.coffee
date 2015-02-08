@@ -1,12 +1,18 @@
 # Scanner module
 #
-#   scan = require('./scanner')
+#   scan = require './scanner'
 #
-#   scan(filename, function (tokens) {processTheTokens(tokens)})
+#   scan filename, (tokens) -> processTheTokens(tokens)
 
 fs = require 'fs'
 byline = require 'byline'
+{XRegExp} = require 'xregexp'
 error = require './error'
+
+LETTER = XRegExp '[\\p{L}]'
+DIGIT = XRegExp '[\\p{Nd}]'
+WORD_CHAR = XRegExp '[\\p{L}\\p{Nd}_]'
+KEYWORDS = /^(?:int|bool|var|read|write|while|loop|end|and|or|not|true|false)$/
 
 module.exports = (filename, callback) ->
   baseStream = fs.createReadStream filename, {encoding: 'utf8'}
@@ -27,7 +33,7 @@ scan = (line, linenumber, tokens) ->
   [start, pos] = [0, 0]
 
   emit = (kind, lexeme) ->
-    tokens.push {kind: kind, lexeme: lexeme or kind, line: linenumber, col: start+1}
+    tokens.push {kind, lexeme: lexeme or kind, line: linenumber, col: start+1}
 
   while true
     # Skip spaces
@@ -50,17 +56,14 @@ scan = (line, linenumber, tokens) ->
       emit line[pos++]
 
     # Reserved words or identifiers
-    else if /[A-Za-z]/.test(line[pos])
-      pos++ while /\w/.test(line[pos]) and pos < line.length
+    else if LETTER.test line[pos]
+      pos++ while WORD_CHAR.test(line[pos]) and pos < line.length
       word = line.substring start, pos
-      if /^(?:int|bool|var|read|write|while|loop|end|and|or|not|true|false)$/.test word
-        emit word
-      else
-        emit 'ID', word
+      emit (if KEYWORDS.test word then word else 'ID'), word
 
     # Numeric literals
-    else if /\d/.test line[pos]
-      pos++ while /\d/.test line[pos]
+    else if DIGIT.test line[pos]
+      pos++ while DIGIT.test line[pos]
       emit 'INTLIT', line.substring start, pos
 
     else
