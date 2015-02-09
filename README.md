@@ -1,6 +1,6 @@
 ![Iki image](http://i.imgur.com/JRTmR2A.png)
 
-This is a compiler for the little programming language called Iki. The compiler is a Node.js commandline application written in CoffeeScript. It's intended to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts, since the backends are pretty trivial. Scanning and parsing are done by hand rather than with a parser generator, giving students an opportunity to learn about text processing and recursive descent parsing.
+This is a compiler for the little programming language called Iki. The compiler is a Node commandline application written in CoffeeScript. It's intended to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts, since the backends are pretty trivial. Scanning and parsing are done by hand rather than with a parser generator, giving students an opportunity to learn about text processing and recursive descent parsing.
 
 ## The Compiler
 
@@ -31,7 +31,7 @@ end;
 
 ## Grammar
 
-Iki programs are free-format.  Comments start with `--` and extend to the end of the line.  The predefined tokens are `intlit`, a sequence of one or more Basic Latin decimal digits, and `id`, a sequence of Basic Latin letters, Basic Latin decimal digits, and underscores, beginning with a letter, that is not a reserved word (`int`, `bool`, `var`, `read`, `write`, `while`, `loop`, `end`, `and`, `or`, `not`, `true`, `false`).  Tokenization uses maximal much, where the space characters are U+0009 through U+000D, U+0020, U+2028, U+2029, and any character in the Unicode `Zs` category.
+Iki programs are free-format.  Comments start with `--` and extend to the end of the line.  The predefined tokens are `intlit`, a sequence of one or more Unicode decimal digits (Category `Nd`), and `id`, a sequence of Unicode letters (Category `L`), Unicode decimal digits (Category `Nd`), and underscores, beginning with a letter, that is not a reserved word (`int`, `bool`, `var`, `read`, `write`, `while`, `loop`, `end`, `and`, `or`, `not`, `true`, `false`).  Tokenization uses maximal much, where the space characters are U+0009 through U+000D, U+0020, U+2028, U+2029, and any character in the Unicode `Zs` category.
 
 The macrosyntax is given below, in a form that can be directly input into Gunther Rademacher's [Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui)
 
