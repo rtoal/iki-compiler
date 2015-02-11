@@ -1,15 +1,19 @@
 {
   "name": "iki-compiler",
-  "version": "0.0.1",
-  "description": "a simple compiler for the Iki programming language",
+  "version": "0.1.0",
+  "description": "A simple compiler for the Iki programming language",
   "dependencies": {
     "byline": "latest",
     "hashmap": "latest",
     "yargs": "latest",
-    "xregexp": "latest"
+    "xregexp": "latest",
+    "coffee-script": "latest"
   },
   "devDependencies": {
     "mocha": "latest",
     "should": "latest"
+  },
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script/register"
   }
 }

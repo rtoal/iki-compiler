@@ -5,7 +5,7 @@ cache = {}
 class Type
 
   constructor: (@name) ->
-    cache[name] = this
+    cache[@name] = this
 
   @BOOL = new Type 'bool'
   @INT = new Type 'int'
