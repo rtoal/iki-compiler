@@ -56,6 +56,11 @@ generator =
     gen s.body
     emit '}'
 
+  IfStatement: (s) ->
+    emit "if (#{gen s.condition}) {"
+    gen s.body
+    emit '}'
+
   IntegerLiteral: (literal) -> literal.toString()
 
   BooleanLiteral: (literal) ->

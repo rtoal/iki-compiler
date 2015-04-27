@@ -19,6 +19,7 @@ BooleanLiteral = require './entities/booleanliteral'
 VariableReference = require './entities/variablereference'
 BinaryExpression = require './entities/binaryexpression'
 UnaryExpression = require './entities/unaryexpression'
+IfStatement = require './entities/ifstatement'
 
 # Collect tokens into this array, global to the module. Hmmm.
 tokens = []
@@ -51,6 +52,8 @@ parseStatement = ->
     parseWriteStatement()
   else if at 'while'
     parseWhileStatement()
+  else if at 'if'
+    parseIfStatement()
   else
     error 'Statement expected', tokens[0]
 
@@ -98,6 +101,14 @@ parseWhileStatement = ->
   body = parseBlock()
   match('end')
   new WhileStatement(condition, body)
+
+parseIfStatement = ->
+  match('if')
+  condition = parseExpression()
+  match('then')
+  body = parseBlock()
+  match('end')
+  new IfStatement(condition, body)
 
 parseExpression = ->
   left = parseExp1()

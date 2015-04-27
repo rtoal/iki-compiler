@@ -102,6 +102,17 @@ var generator = {
     emitLabel(bottom);
   },
 
+  'IfStatement': function (s) {
+    var top = makeLabel();
+    var bottom = makeLabel();
+    emitLabel(top);
+    var condition = gen(s.condition);
+    emitJumpIfFalse(condition, bottom);
+    allocator.freeAllRegisters();
+    gen(s.body)
+    emitLabel(bottom);
+  },
+
   'IntegerLiteral': function (literal) {
     return new ImmediateOperand(literal.toString());
   },

@@ -13,7 +13,7 @@ error = require './error'
 LETTER = XRegExp '[\\p{L}]'
 DIGIT = XRegExp '[\\p{Nd}]'
 WORD_CHAR = XRegExp '[\\p{L}\\p{Nd}_]'
-KEYWORDS = /^(?:int|bool|var|read|write|while|loop|end|and|or|not|true|false)$/
+KEYWORDS = /^(?:int|bool|var|read|write|while|loop|end|and|or|not|true|false|if|then)$/
 
 
 module.exports = (filename, callback) ->
