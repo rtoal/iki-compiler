@@ -4,7 +4,7 @@ class VariableDeclaration
 
   constructor: (@id, @type) ->
 
-  toString = ->
+  toString: ->
     "(Var :#{@id.lexeme} #{@type})"
 
   analyze: (context) ->
