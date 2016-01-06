@@ -8,7 +8,7 @@ class BinaryExpression
   constructor: (@op, @left, @right) ->
 
   toString: ->
-    "(#{@op.lexeme} #{@left} #{@op.right})"
+    "(#{@op.lexeme} #{@left} #{@right})"
 
   analyze: (context) ->
     @left.analyze(context)
