@@ -61,12 +61,12 @@ scan = (line, linenumber, tokens) ->
     else if LETTER.test line[pos]
       pos++ while WORD_CHAR.test(line[pos]) and pos < line.length
       word = line.substring start, pos
-      emit (if KEYWORDS.test word then word else 'ID'), word
+      emit (if KEYWORDS.test word then word else 'id'), word
 
     # Numeric literals
     else if DIGIT.test line[pos]
       pos++ while DIGIT.test line[pos]
-      emit 'INTLIT', line.substring start, pos
+      emit 'intlit', line.substring start, pos
 
     else
       error "Illegal character: #{line[pos]}", {line: linenumber, col: pos+1}

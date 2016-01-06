@@ -74,36 +74,36 @@ You can see the output of the scanner using `-t`:
 ```
 $ ./iki.coffee -t simple.iki
 { kind: 'var', lexeme: 'var', line: 2, col: 1 }
-{ kind: 'ID', lexeme: 'x', line: 2, col: 5 }
+{ kind: 'id', lexeme: 'x', line: 2, col: 5 }
 { kind: ':', lexeme: ':', line: 2, col: 6 }
 { kind: 'int', lexeme: 'int', line: 2, col: 8 }
 { kind: ';', lexeme: ';', line: 2, col: 11 }
 { kind: 'while', lexeme: 'while', line: 3, col: 1 }
 { kind: 'true', lexeme: 'true', line: 3, col: 7 }
 { kind: 'or', lexeme: 'or', line: 3, col: 12 }
-{ kind: 'INTLIT', lexeme: '1', line: 3, col: 15 }
+{ kind: 'intlit', lexeme: '1', line: 3, col: 15 }
 { kind: '<=', lexeme: '<=', line: 3, col: 17 }
-{ kind: 'INTLIT', lexeme: '5', line: 3, col: 20 }
+{ kind: 'intlit', lexeme: '5', line: 3, col: 20 }
 { kind: 'loop', lexeme: 'loop', line: 3, col: 22 }
 { kind: 'var', lexeme: 'var', line: 4, col: 3 }
-{ kind: 'ID', lexeme: 'y', line: 4, col: 7 }
+{ kind: 'id', lexeme: 'y', line: 4, col: 7 }
 { kind: ':', lexeme: ':', line: 4, col: 8 }
 { kind: 'bool', lexeme: 'bool', line: 4, col: 10 }
 { kind: ';', lexeme: ';', line: 4, col: 14 }
 { kind: 'read', lexeme: 'read', line: 5, col: 3 }
-{ kind: 'ID', lexeme: 'x', line: 5, col: 8 }
+{ kind: 'id', lexeme: 'x', line: 5, col: 8 }
 { kind: ';', lexeme: ';', line: 5, col: 9 }
 { kind: 'write', lexeme: 'write', line: 6, col: 3 }
-{ kind: 'INTLIT', lexeme: '9', line: 6, col: 9 }
+{ kind: 'intlit', lexeme: '9', line: 6, col: 9 }
 { kind: '-', lexeme: '-', line: 6, col: 11 }
-{ kind: 'INTLIT', lexeme: '3', line: 6, col: 13 }
+{ kind: 'intlit', lexeme: '3', line: 6, col: 13 }
 { kind: '*', lexeme: '*', line: 6, col: 15 }
-{ kind: 'ID', lexeme: 'x', line: 6, col: 17 }
+{ kind: 'id', lexeme: 'x', line: 6, col: 17 }
 { kind: ';', lexeme: ';', line: 6, col: 18 }
 { kind: 'end', lexeme: 'end', line: 7, col: 1 }
 { kind: ';', lexeme: ';', line: 7, col: 4 }
 { kind: 'write', lexeme: 'write', line: 9, col: 1 }
-{ kind: 'ID', lexeme: 'x', line: 9, col: 7 }
+{ kind: 'id', lexeme: 'x', line: 9, col: 7 }
 { kind: ';', lexeme: ';', line: 9, col: 8 }
 { kind: 'EOF', lexeme: 'EOF' }
 ```

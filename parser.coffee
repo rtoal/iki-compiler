@@ -37,13 +37,13 @@ parseBlock = ->
   loop
     statements.push parseStatement()
     match ';'
-    break unless at ['var','ID','read','write','while']
+    break unless at ['var','id','read','write','while']
   new Block(statements)
 
 parseStatement = ->
   if at 'var'
     parseVariableDeclaration()
-  else if at 'ID'
+  else if at 'id'
     parseAssignmentStatement()
   else if at 'read'
     parseReadStatement()
@@ -56,7 +56,7 @@ parseStatement = ->
 
 parseVariableDeclaration = ->
   match 'var'
-  id = match 'ID'
+  id = match 'id'
   match ':'
   type = parseType()
   new VariableDeclaration(id, type)
@@ -68,7 +68,7 @@ parseType = ->
     error 'Type expected', tokens[0]
 
 parseAssignmentStatement = ->
-  target = new VariableReference(match 'ID')
+  target = new VariableReference(match 'id')
   match '='
   source = parseExpression()
   new AssignmentStatement(target, source)
@@ -76,10 +76,10 @@ parseAssignmentStatement = ->
 parseReadStatement = ->
   match('read')
   variables = []
-  variables.push(new VariableReference(match 'ID'))
+  variables.push(new VariableReference(match 'id'))
   while at ','
     match()
-    variables.push(new VariableReference(match('ID')))
+    variables.push(new VariableReference(match('id')))
   new ReadStatement(variables)
 
 parseWriteStatement = ->
@@ -150,9 +150,9 @@ parseExp5 = ->
 parseExp6 = ->
   if at ['true','false']
     new BooleanLiteral(match().lexeme)
-  else if at 'INTLIT'
+  else if at 'intlit'
     new IntegerLiteral(match().lexeme)
-  else if at 'ID'
+  else if at 'id'
     new VariableReference(match())
   else if at '('
     match()
