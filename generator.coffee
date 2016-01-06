@@ -1,8 +1,8 @@
 # Generator module
 #
-#   var generate = require('./generator')(targetType)  // e.g. 'x86', 'c', 'js'
+#   generate = require('./generator')(targetType) # e.g., 'x86', 'c', 'js'
 #
-#   generate(program)
+#   generate program
 
 error = require './error'
 

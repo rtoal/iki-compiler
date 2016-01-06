@@ -1,6 +1,6 @@
 # Error module
 #
-#   error = require('./error')
+#   error = require './error'
 #
 #   error 'Something happened', {line: 7, col: 22}
 #   error 'Illegal start of expression', token
