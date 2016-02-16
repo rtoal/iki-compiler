@@ -176,4 +176,4 @@ match = (kind) ->
   else if kind is undefined or kind is tokens[0].kind
     tokens.shift()
   else
-    error 'Expected "#{kind}" but found "#{tokens[0].kind}"', tokens[0]
+    error "Expected \"#{kind}\" but found \"#{tokens[0].kind}\"", tokens[0]
