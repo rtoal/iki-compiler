@@ -10,7 +10,7 @@ error.quiet = true
 TEST_DIR = 'test/data/semantic-errors'
 
 describe 'The analyzer detects an error for', () ->
-  for name in fs.readdirSync TEST_DIR
+  fs.readdirSync(TEST_DIR).forEach (name) ->
     check = name.replace(/-/g, ' ').replace(/\.iki$/, '')
     it check, (done) ->
       scan path.join(TEST_DIR, name), (tokens) ->
