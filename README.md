@@ -228,8 +228,12 @@ _v1:
 
 ## For Developers
 
-Unit tests use mocha and should. Because `mocha` does not support CoffeeScript out of the box, run the tests with:
+This is a pretty standard node.js application.
 
+After cloning the repo, you should do the usual:
 ```
-mocha --compilers coffee:coffee-script/register
+npm install -d
+npm test
 ```
+and you're good to go.
+
