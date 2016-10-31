@@ -1,0 +1,35 @@
+Iki {
+
+  Program     =  Block
+  Block       =  (Stmt ";")+
+  Stmt        =  "var" id ":" Type                      -- decl
+              |  id "=" Exp                             -- assignment
+              |  "read" id ("," id)*                    -- read
+              |  "write" Exp ("," Exp)*                 -- write
+              |  "while" Exp "loop" Block "end"         -- while
+  Type        =  "int" | "bool"
+  Exp         =  Exp1 ("or" Exp1)*
+  Exp1        =  Exp2 ("and" Exp2)*
+  Exp2        =  Exp3 (relop Exp3)?
+  Exp3        =  Exp4 (addop Exp4)*
+  Exp4        =  Exp5 (mulop Exp5)*
+  Exp5        =  prefixop? Exp6
+  Exp6        =  "true"
+              |  "false"
+              |  intlit
+              |  id
+              |  "(" Exp ")"                            -- parens
+
+  keyword     =  ("var" | "read" | "write" | "while" | "loop"
+              |  "end" | "int" | "bool" | "true" | "false") ~idrest
+  id          =  ~keyword letter idrest*
+  idrest      =  "_" | alnum
+  intlit      =  digit+
+  addop       =  "+" | "-"
+  relop       =  "<=" | "<" | "==" | "!=" | ">=" | ">"
+  mulop       =  "*" | "/" | "%"
+  prefixop    =  ~"--" "-" | "not"
+
+  space      :=  "\x20" | "\x09" | "\x0A" | "\x0D" | comment
+  comment     =  "--" (~"\n" any)* "\n"
+}
