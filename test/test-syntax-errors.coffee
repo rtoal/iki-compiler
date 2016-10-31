@@ -1,20 +1,14 @@
 fs = require 'fs'
 path = require 'path'
 should = require 'should'
-scan = require '../scanner'
-parse = require '../parser'
-error = require '../error'
-
-error.quiet = true
+ohm = require 'ohm-js'
 
 TEST_DIR = 'test/data/syntax-errors'
 
-describe 'The parser detects an error for', ->
+describe 'The parser detects a syntax error for', ->
+  grammar = ohm.grammar(fs.readFileSync('./iki.ohm'));
   fs.readdirSync(TEST_DIR).forEach (name) ->
-    check = name.replace(/-/g, ' ').replace(/\.iki$/, '')
-    it check, (done) ->
-      scan path.join(TEST_DIR, name), (tokens) ->
-        priorErrorCount = error.count
-        parse tokens
-        error.count.should.be.above priorErrorCount
-        done()
+    it name, (done) ->
+      program = fs.readFileSync(path.join(TEST_DIR, name)).toString()
+      grammar.match(program).succeeded().should.be.false()
+      done()
