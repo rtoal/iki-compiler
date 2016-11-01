@@ -1,13 +1,12 @@
 ![Iki image](http://i.imgur.com/JRTmR2A.png)
 
-This is a compiler for the little programming language called Iki. The compiler is a Node commandline application written in CoffeeScript. It's intended to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts, since the backends are pretty trivial. Scanning and parsing are done by hand rather than with a parser generator, giving students an opportunity to learn about text processing and recursive descent parsing.
+This is a compiler for the little programming language called Iki. The compiler is a Node command line application written in CoffeeScript. It's intended to be useful for people teaching or learning about compiler writing &mdash; at least the front-end parts, since the backends are pretty trivial. Scanning and parsing are done with the help of the Ohm library.
 
 ## The Compiler
 
 ```
-coffee iki.coffee [-t] [-a] [-o] [-i] [--target [js|c|x86]] filename
+coffee iki.coffee [-a] [-o] [-i] [--target [js|c|x86]] filename
 
-  -t scans, prints the tokens, then exits
   -a scans, parses, prints the abstract syntax tree, then exits
   -o does optimizations
   -i goes up to semantic analysis, prints the semantic graph, then exits
@@ -53,6 +52,8 @@ Exp5     ::=  ('not' | '-')? Exp6
 Exp6     ::=  'true' | 'false' | intlit | id | '(' Exp ')'
 ```
 
+A full language description is in the file `iki.ohm`.
+
 ## Examples
 
 Given the following file called _simple.iki_:
@@ -69,46 +70,7 @@ end;
 write x;
 ```
 
-You can see the output of the scanner using `-t`:
-
-```
-$ ./iki.coffee -t simple.iki
-{ kind: 'var', lexeme: 'var', line: 2, col: 1 }
-{ kind: 'id', lexeme: 'x', line: 2, col: 5 }
-{ kind: ':', lexeme: ':', line: 2, col: 6 }
-{ kind: 'int', lexeme: 'int', line: 2, col: 8 }
-{ kind: ';', lexeme: ';', line: 2, col: 11 }
-{ kind: 'while', lexeme: 'while', line: 3, col: 1 }
-{ kind: 'true', lexeme: 'true', line: 3, col: 7 }
-{ kind: 'or', lexeme: 'or', line: 3, col: 12 }
-{ kind: 'intlit', lexeme: '1', line: 3, col: 15 }
-{ kind: '<=', lexeme: '<=', line: 3, col: 17 }
-{ kind: 'intlit', lexeme: '5', line: 3, col: 20 }
-{ kind: 'loop', lexeme: 'loop', line: 3, col: 22 }
-{ kind: 'var', lexeme: 'var', line: 4, col: 3 }
-{ kind: 'id', lexeme: 'y', line: 4, col: 7 }
-{ kind: ':', lexeme: ':', line: 4, col: 8 }
-{ kind: 'bool', lexeme: 'bool', line: 4, col: 10 }
-{ kind: ';', lexeme: ';', line: 4, col: 14 }
-{ kind: 'read', lexeme: 'read', line: 5, col: 3 }
-{ kind: 'id', lexeme: 'x', line: 5, col: 8 }
-{ kind: ';', lexeme: ';', line: 5, col: 9 }
-{ kind: 'write', lexeme: 'write', line: 6, col: 3 }
-{ kind: 'intlit', lexeme: '9', line: 6, col: 9 }
-{ kind: '-', lexeme: '-', line: 6, col: 11 }
-{ kind: 'intlit', lexeme: '3', line: 6, col: 13 }
-{ kind: '*', lexeme: '*', line: 6, col: 15 }
-{ kind: 'id', lexeme: 'x', line: 6, col: 17 }
-{ kind: ';', lexeme: ';', line: 6, col: 18 }
-{ kind: 'end', lexeme: 'end', line: 7, col: 1 }
-{ kind: ';', lexeme: ';', line: 7, col: 4 }
-{ kind: 'write', lexeme: 'write', line: 9, col: 1 }
-{ kind: 'id', lexeme: 'x', line: 9, col: 7 }
-{ kind: ';', lexeme: ';', line: 9, col: 8 }
-{ kind: 'EOF', lexeme: 'EOF' }
-```
-
-And the abstract syntax tree with `-a`:
+You can generate the abstract syntax tree with `-a`:
 
 ```
 $ ./iki.coffee -a simple.iki
@@ -236,4 +198,3 @@ npm install -d
 npm test
 ```
 and you're good to go.
-

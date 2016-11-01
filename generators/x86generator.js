@@ -4,7 +4,7 @@ var HashMap = require('hashmap').HashMap
 var usedVariables = {}
 
 module.exports = function (program) {
-  gen(program)  
+  gen(program)
 }
 
 var makeVariable = (function () {
@@ -118,35 +118,35 @@ var generator = {
 
   'UnaryExpression': function (e) {
     var result = allocator.ensureRegister(gen(e.operand))
-    var instruction = {'-':'neg', 'not':'not'}[e.op.lexeme]
+    var instruction = {'-':'neg', 'not':'not'}[e.op]
     emit(instruction, result)
     return result
   },
 
   'BinaryExpression': function (e) {
     var left = gen(e.left)
-    var result = (e.op.lexeme === '/') ? 
+    var result = (e.op === '/') ?
       allocator.makeRegisterOperandFor("rax") :
       allocator.ensureRegister(left)
 
-    if (e.op.lexeme === 'and') {
+    if (e.op === 'and') {
       emitShortCircuit('je', e, result)
       return result
-    } 
+    }
 
-    if (e.op.lexeme === 'or') {
+    if (e.op === 'or') {
       emitShortCircuit('jne', e, result)
       return result
-    } 
+    }
 
     var right = gen(e.right)
 
-    if (e.op.lexeme === '/') {
+    if (e.op === '/') {
       emit("movq", left, result);
       emit("cqto");
       emit("idivq", allocator.nonImmediate(right));
     } else {
-      switch (e.op.lexeme) {
+      switch (e.op) {
         case '+': emit("addq", right, result); break
         case '-': emit("subq", right, result); break
         case '*': emit("imulq", right, result); break

@@ -59,7 +59,7 @@ generator =
 
   VariableReference: (v) -> makeVariable v.referent
 
-  UnaryExpression: (e) -> "(#{makeOp e.op.lexeme} #{gen e.operand})"
+  UnaryExpression: (e) -> "(#{makeOp e.op} #{gen e.operand})"
 
   BinaryExpression: (e) ->
-    "(#{gen e.left} #{makeOp e.op.lexeme} #{gen e.right})"
+    "(#{gen e.left} #{makeOp e.op} #{gen e.right})"
