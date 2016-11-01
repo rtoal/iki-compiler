@@ -12,21 +12,21 @@ class AnalysisContext
   createChildContext: ->
     new AnalysisContext(this)
 
-  variableMustNotBeAlreadyDeclared: (token) ->
-    if @symbolTable[token.lexeme]
-      error "Variable #{token.lexeme} already declared", token
+  variableMustNotBeAlreadyDeclared: (name) ->
+    if @symbolTable[name]
+      error "Variable #{name} already declared", name
 
   addVariable: (name, entity) ->
     @symbolTable[name] = entity
 
-  lookupVariable: (token) ->
-    variable = @symbolTable[token.lexeme]
+  lookupVariable: (name) ->
+    variable = @symbolTable[name]
     if variable
       variable
     else if not @parent
-      error "Variable #{token.lexeme} not found", token
+      error "Variable #{name} not found", name
       VariableDeclaration.ARBITRARY
     else
-      @parent.lookupVariable token
+      @parent.lookupVariable name
 
 exports.initialContext = AnalysisContext.initialContext

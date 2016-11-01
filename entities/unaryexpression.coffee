@@ -7,11 +7,11 @@ class UnaryExpression
   constructor: (@op, @operand) ->
 
   toString: ->
-    "(#{@op.lexeme} #{@operand})"
+    "(#{@op} #{@operand})"
 
   analyze: (context) ->
     @operand.analyze context
-    switch @op.lexeme
+    switch @op
       when 'not'
         @operand.type.mustBeBoolean 'The "not" operator requires a boolean operand', @op
         @type = Type.BOOL
@@ -21,9 +21,9 @@ class UnaryExpression
 
   optimize: ->
     @operand = @operand.optimize()
-    if @op.lexeme is 'not' and @operand instanceof BooleanLiteral
+    if @op is 'not' and @operand instanceof BooleanLiteral
       new BooleanLiteral(not @operand.value)
-    else if @op.lexeme is '-' and @operand instanceof IntegerLiteral
+    else if @op is '-' and @operand instanceof IntegerLiteral
       new IntegerLiteral(- @operand.value)
     else
       this

@@ -5,11 +5,11 @@ class VariableDeclaration
   constructor: (@id, @type) ->
 
   toString: ->
-    "(Var :#{@id.lexeme} #{@type})"
+    "(Var :#{@id} #{@type})"
 
   analyze: (context) ->
     context.variableMustNotBeAlreadyDeclared @id
-    context.addVariable @id.lexeme, this
+    context.addVariable @id, this
 
   optimize: -> this
 

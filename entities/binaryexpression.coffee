@@ -8,12 +8,12 @@ class BinaryExpression
   constructor: (@op, @left, @right) ->
 
   toString: ->
-    "(#{@op.lexeme} #{@left} #{@right})"
+    "(#{@op} #{@left} #{@right})"
 
   analyze: (context) ->
     @left.analyze(context)
     @right.analyze(context)
-    op = @op.lexeme
+    op = @op
     switch op
       when '<', '<=', '>=', '>'
         @mustHaveIntegerOperands()
@@ -33,11 +33,11 @@ class BinaryExpression
     @left = @left.optimize()
     @right = @right.optimize()
     if @left instanceof IntegerLiteral and @right instanceof IntegerLiteral
-      return foldIntegerConstants @op.lexeme, +@left.value, +@right.value
+      return foldIntegerConstants @op, +@left.value, +@right.value
     else if @left instanceof BooleanLiteral and @right instanceof BooleanLiteral
-      return foldBooleanConstants @op.lexeme, @left.value(), @right.value()
+      return foldBooleanConstants @op, @left.value(), @right.value()
     else
-      switch @op.lexeme
+      switch @op
         when '+'
           return @left if isIntegerLiteral(@right, 0)
           return @right if isIntegerLiteral(@left, 0)
@@ -55,17 +55,17 @@ class BinaryExpression
     return this
 
   mustHaveIntegerOperands: () ->
-    error = "#{@op.lexeme} must have integer operands"
+    error = "#{@op} must have integer operands"
     @left.type.mustBeCompatibleWith(Type.INT, error, @op)
     @right.type.mustBeCompatibleWith(Type.INT, error, @op)
 
   mustHaveBooleanOperands: () ->
-    error = "#{@op.lexeme} must have boolean operands"
+    error = "#{@op} must have boolean operands"
     @left.type.mustBeCompatibleWith(Type.BOOL, error, @op)
     @right.type.mustBeCompatibleWith(Type.BOOL, error, @op)
 
   mustHaveCompatibleOperands: () ->
-    error = "#{@op.lexeme} must have mutually compatible operands"
+    error = "#{@op} must have mutually compatible operands"
     @left.type.mustBeMutuallyCompatibleWith(@right.type, error, @op)
 
 isIntegerLiteral = (operand, value) ->

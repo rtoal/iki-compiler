@@ -1,12 +1,12 @@
 class VariableReference
 
-  constructor: (@token) ->
+  constructor: (@name) ->
 
   toString: ->
-    @token.lexeme
+    @name
 
   analyze: (context) ->
-    @referent = context.lookupVariable @token
+    @referent = context.lookupVariable @name
     @type = @referent.type
 
   optimize: ->

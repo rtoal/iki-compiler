@@ -1,10 +1,7 @@
 # Parser module
 #
 #   parse = require './parser'
-#   program = parse tokens
-
-scanner = require './scanner'
-error = require './error'
+#   program = parse sourceCodeString
 
 Program = require './entities/program'
 Block = require './entities/block'
@@ -19,161 +16,40 @@ BooleanLiteral = require './entities/booleanliteral'
 VariableReference = require './entities/variablereference'
 BinaryExpression = require './entities/binaryexpression'
 UnaryExpression = require './entities/unaryexpression'
+ohm = require 'ohm-js'
+fs = require 'fs'
 
-# Collect tokens into this array, global to the module. Hmmm.
-tokens = []
+grammar = ohm.grammar(fs.readFileSync('./iki.ohm'))
 
-module.exports = (scannerOutput) ->
-  tokens = scannerOutput
-  program = parseProgram()
-  match 'EOF'
-  program
+semantics = grammar.createSemantics().addOperation('ast', {
+  Program: (b) -> new Program(b.ast())
+  Block: (s, _) -> new Block(s.ast())
+  Stmt_decl: (v, id, _, type) -> new VariableDeclaration(id.sourceString, type.ast())
+  Stmt_assignment: (id, _, exp) -> new AssignmentStatement(id.ast(), exp.ast())
+  Stmt_read: (r, i, c, more) -> new ReadStatement([i.ast()].concat(more.ast()))
+  Stmt_write: (w, e, c, more) -> new WriteStatement([e.ast()].concat(more.ast()))
+  Stmt_while: (w, e, d, b, _) -> new WhileStatement(e.ast(), b.ast())
+  Type: (typeName) -> Type.forName typeName.sourceString
+  Exp_binary: (e1, _, e2) -> new BinaryExpression("or", e1.ast(), e2.ast())
+  Exp1_binary: (e1, _, e2) -> new BinaryExpression("and", e1.ast(), e2.ast())
+  Exp2_binary: (e1, bop, e2) -> new BinaryExpression(bop.operator(), e1.ast(), e2.ast())
+  Exp3_binary: (e1, bop, e2) -> new BinaryExpression(bop.operator(), e1.ast(), e2.ast())
+  Exp4_binary: (e1, bop, e2) -> new BinaryExpression(bop.operator(), e1.ast(), e2.ast())
+  Exp5_unary: (uop, e) -> new UnaryExpression(uop.operator(), e.ast())
+  Exp6_parens: (l, e, r) -> e.ast()
+  boollit: (b) -> new BooleanLiteral(this.sourceString)
+  intlit: (i) -> new IntegerLiteral(this.sourceString)
+  id: (l, r) -> new VariableReference(this.sourceString)
+}).addOperation('operator', {
+  prefixop: (_) -> this.sourceString
+  mulop: (_) -> this.sourceString
+  addop: (_) -> this.sourceString
+  relop: (_) -> this.sourceString
+})
 
-parseProgram = ->
-  new Program(parseBlock())
+module.exports = parse = (text) ->
+  match = grammar.match text
+  throw match.message if not match.succeeded()
+  semantics(match).ast()
 
-parseBlock = ->
-  statements = []
-  loop
-    statements.push parseStatement()
-    match ';'
-    break unless at ['var','id','read','write','while']
-  new Block(statements)
-
-parseStatement = ->
-  if at 'var'
-    parseVariableDeclaration()
-  else if at 'id'
-    parseAssignmentStatement()
-  else if at 'read'
-    parseReadStatement()
-  else if at 'write'
-    parseWriteStatement()
-  else if at 'while'
-    parseWhileStatement()
-  else
-    error 'Statement expected', tokens[0]
-
-parseVariableDeclaration = ->
-  match 'var'
-  id = match 'id'
-  match ':'
-  type = parseType()
-  new VariableDeclaration(id, type)
-
-parseType = ->
-  if at ['int','bool']
-    Type.forName match().lexeme
-  else
-    error 'Type expected', tokens[0]
-
-parseAssignmentStatement = ->
-  target = new VariableReference(match 'id')
-  match '='
-  source = parseExpression()
-  new AssignmentStatement(target, source)
-
-parseReadStatement = ->
-  match('read')
-  variables = []
-  variables.push(new VariableReference(match 'id'))
-  while at ','
-    match()
-    variables.push(new VariableReference(match('id')))
-  new ReadStatement(variables)
-
-parseWriteStatement = ->
-  match('write')
-  expressions = []
-  expressions.push(parseExpression())
-  while at(',')
-    match()
-    expressions.push(parseExpression())
-  new WriteStatement(expressions)
-
-parseWhileStatement = ->
-  match('while')
-  condition = parseExpression()
-  match('loop')
-  body = parseBlock()
-  match('end')
-  new WhileStatement(condition, body)
-
-parseExpression = ->
-  left = parseExp1()
-  while at 'or'
-    op = match()
-    right = parseExp1()
-    left = new BinaryExpression(op, left, right)
-  left
-
-parseExp1 = ->
-  left = parseExp2()
-  while at 'and'
-    op = match()
-    right = parseExp2()
-    left = new BinaryExpression(op, left, right)
-  left
-
-parseExp2 = ->
-  left = parseExp3()
-  if at ['<','<=','==','!=','>=','>']
-    op = match()
-    right = parseExp3()
-    left = new BinaryExpression(op, left, right)
-  left
-
-parseExp3 = ->
-  left = parseExp4()
-  while at ['+','-']
-    op = match()
-    right = parseExp4()
-    left = new BinaryExpression(op, left, right)
-  left
-
-parseExp4 = ->
-  left = parseExp5()
-  while at ['*','/']
-    op = match()
-    right = parseExp5()
-    left = new BinaryExpression(op, left, right)
-  left
-
-parseExp5 = ->
-  if at ['-','not']
-    op = match()
-    operand = parseExp6()
-    new UnaryExpression(op, operand)
-  else
-    parseExp6()
-
-parseExp6 = ->
-  if at ['true','false']
-    new BooleanLiteral(match().lexeme)
-  else if at 'intlit'
-    new IntegerLiteral(match().lexeme)
-  else if at 'id'
-    new VariableReference(match())
-  else if at '('
-    match()
-    expression = parseExpression()
-    match ')'
-    expression
-  else
-    error 'Illegal start of expression', tokens[0]
-
-at = (kind) ->
-  if tokens.length is 0
-    false
-  else if Array.isArray kind
-    kind.some(at)
-  else
-    kind is tokens[0].kind
-
-match = (kind) ->
-  if tokens.length is 0
-    error 'Unexpected end of source program'
-  else if kind is undefined or kind is tokens[0].kind
-    tokens.shift()
-  else
-    error "Expected \"#{kind}\" but found \"#{tokens[0].kind}\"", tokens[0]
+#console.log(parse("var x:int; write 2+7, -7, x; read y, z;u=false or y;").toString())
