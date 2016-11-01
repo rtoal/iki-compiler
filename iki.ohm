@@ -36,6 +36,6 @@ Iki {
   mulop       =  "*" | "/" | "%"
   prefixop    =  ~"--" "-" | "not"
 
-  space      :=  "\x20" | "\x09" | "\x0A" | "\x0D" | comment
+  space      +=  comment
   comment     =  "--" (~"\n" any)* "\n"
 }

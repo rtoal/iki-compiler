@@ -30,7 +30,7 @@ end;
 
 ## Grammar
 
-Iki programs are free-format.  Comments start with `--` and extend to the end of the line.  The predefined tokens are `intlit`, a sequence of one or more Unicode decimal digits (Category `Nd`), and `id`, a sequence of Unicode letters (Category `L`), Unicode decimal digits (Category `Nd`), and underscores, beginning with a letter, that is not a reserved word (`int`, `bool`, `var`, `read`, `write`, `while`, `loop`, `end`, `and`, `or`, `not`, `true`, `false`).  Tokenization uses maximal much, where the space characters are U+0009 through U+000D, U+0020, U+2028, U+2029, and any character in the Unicode `Zs` category.
+Iki programs are free-format.  Comments start with `--` and extend to the end of the line.  The predefined tokens are `intlit`, a sequence of one or more Unicode decimal digits (Category `Nd`), and `id`, a sequence of Unicode letters (Category `L`), Unicode decimal digits (Category `Nd`), and underscores, beginning with a letter, that is not a reserved word (`int`, `bool`, `var`, `read`, `write`, `while`, `loop`, `end`, `and`, `or`, `not`, `true`, `false`). Space characters are those in the ES5 spec.
 
 The macrosyntax is given below, in a form that can be directly input into Gunther Rademacher's [Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui)
 
