@@ -1,4 +1,4 @@
-VariableReference = require './variablereference'
+VariableExpression = require './variableexpression'
 
 class AssignmentStatement
 
@@ -15,7 +15,7 @@ class AssignmentStatement
   optimize: ->
     @target = @target.optimize()
     @source = @source.optimize()
-    if @source instanceof VariableReference and @target.referent is @source.referent
+    if @source instanceof VariableExpression and @target.referent is @source.referent
       null
     this
 

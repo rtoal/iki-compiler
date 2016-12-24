@@ -1,4 +1,4 @@
-class VariableReference
+class VariableExpression
 
   constructor: (@name) ->
 
@@ -12,4 +12,4 @@ class VariableReference
   optimize: ->
     this
 
-module.exports = VariableReference
+module.exports = VariableExpression

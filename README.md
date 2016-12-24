@@ -92,7 +92,7 @@ $ ./iki.coffee -i simple.iki
 5 BinaryExpression {"op":"or","left":6,"right":8,"type":7}
 12 VariableDeclaration {"id":"y","type":7}
 14 VariableReference {"token":"x","referent":2,"type":3}
-13 ReadStatement {"varrefs":[14]}
+13 ReadStatement {"varexps":[14]}
 17 IntegerLiteral {"token":"9","type":3}
 19 IntegerLiteral {"token":"3","type":3}
 20 VariableReference {"token":"x","referent":2,"type":3}

@@ -1,12 +1,12 @@
 class ReadStatement
 
-  constructor: (@varrefs) ->
+  constructor: (@varexps) ->
 
   toString: ->
-    "(Read #{@varrefs.join(' ')})"
+    "(Read #{@varexps.join(' ')})"
 
   analyze: (context) ->
-    for v in @varrefs
+    for v in @varexps
       v.analyze(context)
       v.type.mustBeInteger 'Variables in "read" statement must have type integer'
 

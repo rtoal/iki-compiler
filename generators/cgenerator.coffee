@@ -46,7 +46,7 @@ generator =
     emit "#{gen s.target} = #{gen s.source};"
 
   ReadStatement: (s) ->
-    emit "scanf(\"%d\\n\", &#{makeVariable(v.referent)});" for v in s.varrefs
+    emit "scanf(\"%d\\n\", &#{makeVariable(v.referent)});" for v in s.varexps
 
   WriteStatement: (s) ->
     emit "printf(\"%d\\n\", #{gen(e)});" for e in s.expressions
@@ -62,7 +62,7 @@ generator =
     # Assume old-style C without a boolean type so just use 0 and 1
     return ['false','true'].indexOf(literal.toString())
 
-  VariableReference: (v) -> makeVariable v.referent
+  VariableExpression: (v) -> makeVariable v.referent
 
   UnaryExpression: (e) -> "(#{makeOp e.op} #{gen e.operand})"
 

@@ -1,7 +1,7 @@
 Type = require './type'
 IntegerLiteral = require './integerliteral'
 BooleanLiteral = require './booleanliteral'
-VariableReference = require './variablereference'
+VariableExpression = require './variableexpression'
 
 class BinaryExpression
 
@@ -72,7 +72,7 @@ isIntegerLiteral = (operand, value) ->
   operand instanceof IntegerLiteral and operand.value is value
 
 sameVariable = (exp1, exp2) ->
-  exp1 instanceof VariableReference and exp2 instanceof VariableReference and exp1.referent is exp2.referent
+  exp1 instanceof VariableExpression and exp2 instanceof VariableExpression and exp1.referent is exp2.referent
 
 foldIntegerConstants = (op, x, y) ->
   switch op

@@ -43,7 +43,7 @@ generator =
     emit "#{gen s.target} = #{gen s.source};"
 
   ReadStatement: (s) ->
-    emit "#{makeVariable(v.referent)} = prompt();" for v in s.varrefs
+    emit "#{makeVariable(v.referent)} = prompt();" for v in s.varexps
 
   WriteStatement: (s) ->
     emit "alert(#{gen(e)});" for e in s.expressions
@@ -57,7 +57,7 @@ generator =
 
   BooleanLiteral: (literal) -> literal.toString()
 
-  VariableReference: (v) -> makeVariable v.referent
+  VariableExpression: (v) -> makeVariable v.referent
 
   UnaryExpression: (e) -> "(#{makeOp e.op} #{gen e.operand})"
 

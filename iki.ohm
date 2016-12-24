@@ -1,29 +1,29 @@
 Iki {
-
   Program     =  Block
   Block       =  (Stmt ";")+
-  Stmt        =  "var" id ":" Type                      -- decl
-              |  id "=" Exp                             -- assignment
-              |  "read" id ("," id)*                    -- read
-              |  "write" Exp ("," Exp)*                 -- write
-              |  "while" Exp "loop" Block "end"         -- while
+  Stmt        =  "var" id ":" Type               -- decl
+              |  VarExp "=" Exp                  -- assignment
+              |  "read" VarExp ("," VarExp)*     -- read
+              |  "write" Exp ("," Exp)*          -- write
+              |  "while" Exp "loop" Block "end"  -- while
   Type        =  "int" | "bool"
-  Exp         =  Exp "or" Exp1                          -- binary
+  Exp         =  Exp "or" Exp1                   -- binary
               |  Exp1
-  Exp1        =  Exp1 "and" Exp2                        -- binary
+  Exp1        =  Exp1 "and" Exp2                 -- binary
               |  Exp2
-  Exp2        =  Exp3 relop Exp3                        -- binary
+  Exp2        =  Exp3 relop Exp3                 -- binary
               |  Exp3
-  Exp3        =  Exp3 addop Exp4                        -- binary
+  Exp3        =  Exp3 addop Exp4                 -- binary
               |  Exp4
-  Exp4        =  Exp4 mulop Exp5                        -- binary
+  Exp4        =  Exp4 mulop Exp5                 -- binary
               |  Exp5
-  Exp5        =  prefixop Exp6                          -- unary
+  Exp5        =  prefixop Exp6                   -- unary
               |  Exp6
   Exp6        =  boollit
               |  intlit
-              |  id
-              |  "(" Exp ")"                            -- parens
+              |  VarExp
+              |  "(" Exp ")"                     -- parens
+  VarExp      = id
 
   keyword     =  ("var" | "read" | "write" | "while" | "loop"
               |  "end" | "int" | "bool" | "true" | "false") ~idrest

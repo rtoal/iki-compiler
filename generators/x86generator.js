@@ -72,7 +72,7 @@ var generator = {
 
   'ReadStatement': function (s) {
     // Call scanf from C lib, format string in rdi, operand in rsi
-    s.varrefs.forEach(function (v) {
+    s.varexps.forEach(function (v) {
       emit('mov', gen(v), '%rsi')
       emit('lea', 'READ(%rip)', '%rdi')
       emit('xor', '%rax', '%rax')
@@ -110,7 +110,7 @@ var generator = {
     return new ImmediateOperand(['false','true'].indexOf(literal.toString()))
   },
 
-  'VariableReference': function (v) {
+  'VariableExpression': function (v) {
     var name = makeVariable(v.referent);
     usedVariables[name] = true;
     return new MemoryOperand(name);
