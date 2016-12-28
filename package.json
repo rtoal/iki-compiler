@@ -1,12 +1,10 @@
 {
   "name": "iki-compiler",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple compiler for the Iki programming language",
   "dependencies": {
-    "byline": "latest",
     "hashmap": "latest",
     "yargs": "latest",
-    "xregexp": "latest",
     "ohm-js": "latest",
     "coffee-script": "latest"
   },
