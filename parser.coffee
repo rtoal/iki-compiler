@@ -16,6 +16,7 @@ BooleanLiteral = require './entities/booleanliteral'
 VariableExpression = require './entities/variableExpression'
 BinaryExpression = require './entities/binaryexpression'
 UnaryExpression = require './entities/unaryexpression'
+error = require './error'
 ohm = require 'ohm-js'
 fs = require 'fs'
 
@@ -43,5 +44,4 @@ semantics = grammar.createSemantics().addOperation 'ast',
 
 module.exports = parse = (text) ->
   match = grammar.match text
-  throw match.message if not match.succeeded()
-  semantics(match).ast()
+  if match.succeeded() then semantics(match).ast() else error(match.message)
