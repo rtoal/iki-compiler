@@ -5,7 +5,7 @@ class VariableDeclaration
   constructor: (@id, @type) ->
 
   toString: ->
-    "(Var :#{@id} #{@type})"
+    "(Var #{@id} #{@type})"
 
   analyze: (context) ->
     context.variableMustNotBeAlreadyDeclared @id
