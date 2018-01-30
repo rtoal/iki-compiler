@@ -235,7 +235,6 @@ class WriteStatement {
   analyze(context) {
     this.expressions.forEach((e) => {
       e.analyze(context);
-      console.log('e', e);
       e.type.mustBeInteger('Expressions in "write" statement must have type integer');
     });
   }
