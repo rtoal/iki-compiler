@@ -7,9 +7,9 @@
     "ohm-js": "latest"
   },
   "devDependencies": {
-    "eslint": "latest",
-    "eslint-config-airbnb-base": "latest",
-    "eslint-plugin-import": "latest",
+    "eslint": "^4.16.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
     "mocha": "latest"
   },
   "scripts": {
