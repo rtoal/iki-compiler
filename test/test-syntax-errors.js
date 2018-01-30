@@ -1,14 +1,16 @@
-fs = require 'fs'
-should = require 'should'
-ohm = require 'ohm-js'
+const fs = require('fs');
+const assert = require('assert');
+const parse = require('../parser');
 
-TEST_DIR = 'test/data/syntax-errors'
+const TEST_DIR = 'test/data/syntax-errors';
 
-describe 'The parser detects a syntax error for', ->
-  grammar = ohm.grammar(fs.readFileSync('./iki.ohm'))
-  fs.readdirSync(TEST_DIR).forEach (name) ->
-    check = name.replace(/-/g, ' ').replace(/\.iki$/, '')
-    it check, (done) ->
-      sourceCode = fs.readFileSync("#{TEST_DIR}/#{name}", "utf-8")
-      grammar.match(sourceCode).succeeded().should.be.false()
-      done()
+describe('The parser detects a syntax error for', () => {
+  fs.readdirSync(TEST_DIR).forEach((name) => {
+    const check = name.replace(/-/g, ' ').replace(/\.iki$/, '');
+    it(check, (done) => {
+      const sourceCode = fs.readFileSync(`${TEST_DIR}/${name}`, 'utf-8');
+      assert.throws(() => parse(sourceCode));
+      done();
+    });
+  });
+});

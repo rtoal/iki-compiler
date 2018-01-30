@@ -10,3 +10,6 @@ rules:
     off
   no-throw-literal:
     off
+env:
+  mocha:
+    true
