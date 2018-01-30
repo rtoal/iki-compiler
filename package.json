@@ -9,10 +9,15 @@
     "coffee-script": "latest"
   },
   "devDependencies": {
+    "eslint": "^3.16.1",
+    "eslint-config-airbnb-base": "^11.1.0",
+    "eslint-plugin-import": "^2.2.0",
     "mocha": "latest",
     "should": "latest"
   },
   "scripts": {
+    "lint": "./node_modules/.bin/eslint **/*.js;exit 0",
+    "start": "coffee iki.coffee",
     "test": "mocha --compilers coffee:coffee-script/register"
   }
 }

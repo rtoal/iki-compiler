@@ -1,33 +1,30 @@
-var util = require('util')
-var HashMap = require('hashmap').HashMap
+const HashMap = require('hashmap').HashMap;
 
-var usedVariables = {}
+const usedVariables = {};
 
-module.exports = function (program) {
-  gen(program)
-}
+module.exports = gen;
 
-var makeVariable = (function () {
-  var lastId = 0
-  var map = new HashMap()
-  return function (v) {
-    if (!map.has(v)) map.set(v, ++lastId)
-    return '_v' + map.get(v)
+const makeVariable = (() => {
+  const lastId = 0;
+  const map = new HashMap();
+  return (v) => {
+    if (!map.has(v)) map.set(v, ++lastId);
+    return '_v' + map.get(v);
   }
-}())
+})();
 
-var makeLabel = (function () {
-  var labelsGenerated = 0
+const makeLabel = (function () {
+  const labelsGenerated = 0
   return function () {
     return 'L' + (++labelsGenerated)
   }
 }())
 
 function gen(e) {
-  return generator[e.constructor.name](e)
+  return generator[e.constructor.name](e);
 }
 
-var generator = {
+const generator = {
 
   'Program': function (program) {
     emit('.globl', '_main')
@@ -42,7 +39,7 @@ var generator = {
     emit('.ascii', '"%d\\0\\0"') // extra 0 for alignment
     emitLabel('WRITE')
     emit('.ascii', '"%d\\n\\0"')
-    for (var s in usedVariables) {
+    for (const s in usedVariables) {
       emitLabel(s)
       emit('.quad', '0');
     }
@@ -63,7 +60,7 @@ var generator = {
     source = gen(s.source)
     destination = gen(s.target)
     if (source instanceof MemoryOperand && destination instanceof MemoryOperand) {
-      var oldSource = source
+      const oldSource = source
       source = allocator.makeRegisterOperand()
       emit('mov', oldSource, source)
     }
@@ -91,10 +88,10 @@ var generator = {
   },
 
   'WhileStatement': function (s) {
-    var top = makeLabel();
-    var bottom = makeLabel();
+    const top = makeLabel();
+    const bottom = makeLabel();
     emitLabel(top);
-    var condition = gen(s.condition);
+    const condition = gen(s.condition);
     emitJumpIfFalse(condition, bottom);
     allocator.freeAllRegisters();
     gen(s.body)
@@ -111,21 +108,21 @@ var generator = {
   },
 
   'VariableExpression': function (v) {
-    var name = makeVariable(v.referent);
+    const name = makeVariable(v.referent);
     usedVariables[name] = true;
     return new MemoryOperand(name);
   },
 
   'UnaryExpression': function (e) {
-    var result = allocator.ensureRegister(gen(e.operand))
-    var instruction = {'-':'neg', 'not':'not'}[e.op]
+    const result = allocator.ensureRegister(gen(e.operand))
+    const instruction = {'-':'neg', 'not':'not'}[e.op]
     emit(instruction, result)
     return result
   },
 
   'BinaryExpression': function (e) {
-    var left = gen(e.left)
-    var result = (e.op === '/') ?
+    const left = gen(e.left)
+    const result = (e.op === '/') ?
       allocator.makeRegisterOperandFor("rax") :
       allocator.ensureRegister(left)
 
@@ -139,7 +136,7 @@ var generator = {
       return result
     }
 
-    var right = gen(e.right)
+    const right = gen(e.right)
 
     if (e.op === '/') {
       emit("movq", left, result);
@@ -167,24 +164,24 @@ function emitLabel(label) {
 }
 
 function emit(op, x, y) {
-  var line = '\t' + op
+  const line = '\t' + op
   if (x) line += '\t' + x
   if (y) line += ', ' + y
   console.log(line)
 }
 
 function emitShortCircuit(operation, expression, destination) {
-  var skip = makeLabel()
+  const skip = makeLabel()
   emit("cmp", "$0", destination)
   emit(operation, skip)
-  var right = gen(expression.right)
+  const right = gen(expression.right)
   emit("mov", right, destination)
   emitLabel(skip)
 }
 
 function emitComparison(operation, right, destination) {
   emit("cmp", right, destination)
-  var byteRegister = '%' + allocator.byteRegisterFor(destination.register)
+  const byteRegister = '%' + allocator.byteRegisterFor(destination.register)
   emit(operation, byteRegister)
   emit("movsbq", byteRegister, destination)
 }
@@ -217,7 +214,7 @@ RegisterAllocator.prototype.byteRegisterFor = function (registerName) {
 RegisterAllocator.prototype.makeRegisterOperand = function () {
   // Returns a brand new register operand bound to the first available free register
 
-  var operand = new RegisterOperand("");
+  const operand = new RegisterOperand("");
   this.assignFreeRegisterTo(operand);
   return operand;
 }
@@ -226,12 +223,12 @@ RegisterAllocator.prototype.makeRegisterOperandFor = function (registerName) {
   // Returns a brand new register operand bound to a specific register.  If something is
   // already in that register, generates code to move it out and rebind to a new register.
 
-  var existingRegisterOperand = this.bindings.get(registerName);
+  const existingRegisterOperand = this.bindings.get(registerName);
   if (existingRegisterOperand) {
     this.assignFreeRegisterTo(existingRegisterOperand);
     emit("movq", "%" + registerName, existingRegisterOperand);
   }
-  var operand = new RegisterOperand(registerName);
+  const operand = new RegisterOperand(registerName);
   this.bindings.set(registerName, operand);
   return operand;
 }
@@ -241,7 +238,7 @@ RegisterAllocator.prototype.nonImmediate = function (operand) {
   // operand containing this value.
 
   if (operand instanceof ImmediateOperand) {
-    var newOperand = this.makeRegisterOperand();
+    const newOperand = this.makeRegisterOperand();
     emit("movq", operand + ", " + newOperand);
     return newOperand;
   }
@@ -253,7 +250,7 @@ RegisterAllocator.prototype.ensureRegister = function (operand) {
   // operand containing this value.
 
   if (! (operand instanceof RegisterOperand)) {
-    var newOperand = this.makeRegisterOperand();
+    const newOperand = this.makeRegisterOperand();
     emit("movq", operand, newOperand);
     return newOperand;
   }
@@ -263,22 +260,22 @@ RegisterAllocator.prototype.ensureRegister = function (operand) {
 RegisterAllocator.prototype.assignFreeRegisterTo = function (registerOperand) {
   // Changes the register value of an existing register operand to the first available register.
 
-  for (var i = 0; i < this.names.length; i++) {
-    var register = this.names[i]
+  for (const i = 0; i < this.names.length; i++) {
+    const register = this.names[i]
     if (!this.bindings.has(register)) {
       this.bindings.set(register, registerOperand);
       registerOperand.register = register;
       return;
     }
   }
-  throw new Error("No more registers available")
+  throw 'No more registers available';
 }
 
 RegisterAllocator.prototype.freeAllRegisters = function () {
   this.bindings.clear()
 }
 
-var allocator = new RegisterAllocator()
+const allocator = new RegisterAllocator()
 
 
 function ImmediateOperand(value) {

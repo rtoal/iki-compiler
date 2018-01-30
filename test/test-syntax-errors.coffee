@@ -1,9 +1,6 @@
 fs = require 'fs'
 should = require 'should'
 ohm = require 'ohm-js'
-error = require '../error'
-
-error.quiet = true
 
 TEST_DIR = 'test/data/syntax-errors'
 

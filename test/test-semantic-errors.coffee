@@ -1,9 +1,6 @@
 fs = require 'fs'
-should = require 'should'
+assert = require 'assert'
 parse = require '../parser'
-error = require '../error'
-
-error.quiet = true
 
 TEST_DIR = 'test/data/semantic-errors'
 
@@ -12,7 +9,5 @@ describe 'The analyzer detects an error for', () ->
     check = name.replace(/-/g, ' ').replace(/\.iki$/, '')
     it check, (done) ->
       program = parse(fs.readFileSync("#{TEST_DIR}/#{name}", "utf-8"))
-      priorErrorCount = error.count
-      program.analyze()
-      error.count.should.be.above(priorErrorCount)
+      assert.throws(() => program.analyze());
       done()
