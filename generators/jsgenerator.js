@@ -38,7 +38,7 @@ const generator = {
     indentLevel -= 1;
   },
   VariableDeclaration(v) {
-    const initializer = { int: '0', bool: 'false' }[v.type];
+    const initializer = { int: '0', bool: 'false' }[v.type.name];
     emit(`var ${jsName(v)} = ${initializer};`);
   },
   AssignmentStatement(s) { emit(`${gen(s.target)} = ${gen(s.source)};`); },
@@ -49,8 +49,8 @@ const generator = {
     gen(s.body);
     emit('}');
   },
-  IntegerLiteral(literal) { return literal.toString(); },
-  BooleanLiteral(literal) { return literal.toString(); },
+  IntegerLiteral(literal) { return literal.value; },
+  BooleanLiteral(literal) { return literal.value; },
   VariableExpression(v) { return jsName(v.referent); },
   UnaryExpression(e) { return `(${makeOp(e.op)} ${gen(e.operand)})`; },
   BinaryExpression(e) { return `(${gen(e.left)} ${makeOp(e.op)} ${gen(e.right)})`; },

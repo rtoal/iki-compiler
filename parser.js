@@ -30,7 +30,7 @@ const semantics = grammar.createSemantics().addOperation('ast', {
   Exp4_binary(e1, op, e2) { return new BinaryExpression(op.sourceString, e1.ast(), e2.ast()); },
   Exp5_unary(op, e) { return new UnaryExpression(op.sourceString, e.ast()); },
   Exp6_parens(_1, e, _2) { return e.ast(); },
-  boollit(_) { return new BooleanLiteral(this.sourceString); },
+  boollit(_) { return new BooleanLiteral(this.sourceString === 'true'); },
   intlit(_) { return new IntegerLiteral(this.sourceString); },
   VarExp(_) { return new VariableExpression(this.sourceString); },
 });

@@ -1,8 +1,10 @@
 -- Not hello, world
 var x: int;
-
-x = 9 - 3 * 5; -- wow, assignment
-while false or 1 == x loop
-    write -x, x / 3;
-    read x;
+while true or 1 <= 5 loop
+  var y: bool;
+  var z: int;
+  read x, z;
+  write 9 - 3 * x;
 end;
+
+write x;

@@ -33,14 +33,14 @@ Type.INT = new Type('int');
 Type.forName = name => Type.cache[name];
 
 class BooleanLiteral {
-  constructor(name) {
-    this.name = name;
-  }
-  value() {
-    return this.name === true;
+  constructor(value) {
+    this.value = value;
   }
   analyze() {
     this.type = Type.BOOL;
+  }
+  optimize() {
+    return this;
   }
 }
 

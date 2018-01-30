@@ -7,7 +7,7 @@ const makeVariable = (() => {
   const map = new Map();
   return (v) => {
     if (!map.has(v)) map.set(v, ++lastId); // eslint-disable-line no-plusplus
-    return `_v${map.get(v)}`;
+    return `_${v.id}_${map.get(v)}`;
   };
 })();
 
@@ -96,16 +96,16 @@ const generator = {
   },
 
   IntegerLiteral(literal) {
-    return new ImmediateOperand(literal.toString());
+    return new ImmediateOperand(literal.value);
   },
 
   BooleanLiteral(literal) {
-    return new ImmediateOperand(['false', 'true'].indexOf(literal.toString()));
+    return new ImmediateOperand([false, true].indexOf(literal.toString()));
   },
 
   VariableExpression(v) {
     const name = makeVariable(v.referent);
-    usedVariables[name] = true;
+    usedVariables.add(name);
     return new MemoryOperand(name);
   },
 
