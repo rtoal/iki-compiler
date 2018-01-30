@@ -1,12 +1,10 @@
-const HashMap = require('hashmap').HashMap;
-
 const usedVariables = new Set();
 
 module.exports = gen;
 
 const makeVariable = (() => {
   let lastId = 0;
-  const map = new HashMap();
+  const map = new Map();
   return (v) => {
     if (!map.has(v)) map.set(v, ++lastId); // eslint-disable-line no-plusplus
     return `_v${map.get(v)}`;
@@ -203,7 +201,7 @@ class RegisterAllocator {
 
   constructor() {
     this.names = ['rax', 'rcx', 'r8', 'r9', 'r10', 'r11'];
-    this.bindings = new HashMap();
+    this.bindings = new Map();
   }
 
   byteRegisterFor(registerName) {

@@ -3,17 +3,14 @@
   "version": "0.3.0",
   "description": "A simple compiler for the Iki programming language",
   "dependencies": {
-    "hashmap": "latest",
     "yargs": "latest",
-    "ohm-js": "latest",
-    "coffee-script": "latest"
+    "ohm-js": "latest"
   },
   "devDependencies": {
-    "eslint": "^3.16.1",
-    "eslint-config-airbnb-base": "^11.1.0",
-    "eslint-plugin-import": "^2.2.0",
-    "mocha": "latest",
-    "should": "latest"
+    "eslint": "latest",
+    "eslint-config-airbnb-base": "latest",
+    "eslint-plugin-import": "latest",
+    "mocha": "latest"
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint **/*.js;exit 0",
