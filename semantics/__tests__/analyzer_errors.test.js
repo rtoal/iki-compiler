@@ -20,7 +20,7 @@ const errors = [
   ['types do not match in addition', 'write 3 + false;'],
   ['types do not match in subtraction', 'write 3 - false;'],
   ['types do not match in multiplication', 'write true * 2;'],
-  ['types do not match in equality test', 'while 2 < true loop write 1; end;'],
+  ['types do not match in equality test', 'while 2 == true loop write 1; end;'],
   ['undeclared because in other scope', 'while false loop var x: int; end; write x;'],
   // Might need more here, depending on your test coverage report
 ];

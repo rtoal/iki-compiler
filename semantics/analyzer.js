@@ -98,7 +98,7 @@ UnaryExpression.prototype.analyze = function(context) {
   if (this.op === 'not') {
     this.operand.type.mustBeBoolean('The "not" operator requires a boolean operand', this.op);
     this.type = BoolType;
-  } else if (this.op === '-') {
+  } else {
     this.operand.type.mustBeInteger('Negation requires an integer operand', this.op);
     this.type = IntType;
   }
