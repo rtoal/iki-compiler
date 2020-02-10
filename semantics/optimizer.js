@@ -91,6 +91,14 @@ BinaryExpression.prototype.optimize = function() {
   } else if (this.op === '/') {
     if (this.right.isOne()) return this.left;
     if (this.left.sameVariableAs(this.right)) return new IntegerLiteral(1);
+  } else if (this.op === 'or') {
+    if (this.right.isFalse()) return this.left;
+    if (this.left.isFalse()) return this.right;
+    if (this.left.isTrue() || this.right.isTrue()) return new BooleanLiteral(true);
+  } else if (this.op === 'and') {
+    if (this.right.isTrue()) return this.left;
+    if (this.left.isTrue()) return this.right;
+    if (this.left.isFalse() || this.right.isFalse()) return new BooleanLiteral(false);
   }
   return this;
 };
@@ -101,6 +109,12 @@ Object.assign(Expression.prototype, {
   },
   isOne() {
     return this instanceof IntegerLiteral && this.value === 1;
+  },
+  isFalse() {
+    return this instanceof BooleanLiteral && this.value === false;
+  },
+  isTrue() {
+    return this instanceof BooleanLiteral && this.value === true;
   },
   sameVariableAs(e) {
     return (
