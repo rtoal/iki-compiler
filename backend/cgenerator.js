@@ -1,3 +1,18 @@
+const {
+  Program,
+  Block,
+  VariableDeclaration,
+  AssignmentStatement,
+  ReadStatement,
+  WriteStatement,
+  WhileStatement,
+  IntegerLiteral,
+  BooleanLiteral,
+  VariableExpression,
+  UnaryExpression,
+  BinaryExpression,
+} = require('../ast');
+
 const indentPadding = 4;
 let indentLevel = 0;
 
@@ -9,75 +24,77 @@ function makeOp(op) {
   return { not: '!', and: '&&', or: '||' }[op] || op;
 }
 
-// cName(e) takes any Iki object with an id property, such as a
-// Variable, Parameter, or FunctionDeclaration, and produces a C
-// name by appending a unique indentifying suffix, such as '_1' or '_503'.
-// It uses a cache so it can return the same exact string each time it is
-// called with a particular entity.
+// cName(e) takes any Iki object with an id property, and produces a C
+// name by appending a unique suffix, such as '_1' or '_503'. It uses a
+// a cache so it can return the same exact string each time it is called
+// with a particular entity.
 const cName = (() => {
   let lastId = 0;
   const map = new Map();
   return v => {
     if (!map.has(v)) {
-      map.set(v, ++lastId); // eslint-disable-line no-plusplus
+      map.set(v, ++lastId);
     }
     return `${v.id}_${map.get(v)}`;
   };
 })();
 
-const generator = {
-  Program(program) {
-    indentLevel = 0;
-    emit('#include <stdio.h>');
-    emit('#include <stdbool.h>');
-    emit('int main() {');
-    gen(program.block);
-    indentLevel += 1;
-    emit('return 0;');
-    indentLevel -= 1;
-    emit('}');
-  },
-  Block(block) {
-    indentLevel += 1;
-    block.statements.forEach(gen);
-    indentLevel -= 1;
-  },
-  VariableDeclaration(v) {
-    emit(`${v.type.name} ${cName(v)} = 0;`);
-  },
-  AssignmentStatement(s) {
-    emit(`${gen(s.target)} = ${gen(s.source)};`);
-  },
-  ReadStatement(s) {
-    s.varexps.forEach(v => emit(`scanf("%d\\n", &${cName(v.referent)});`));
-  },
-  WriteStatement(s) {
-    s.expressions.forEach(e => emit(`printf("%d\\n", ${gen(e)});`));
-  },
-  WhileStatement(s) {
-    emit(`while (${gen(s.condition)}) {`);
-    gen(s.body);
-    emit('}');
-  },
-  IntegerLiteral(literal) {
-    return literal.value;
-  },
-  BooleanLiteral(literal) {
-    return literal.value;
-  },
-  VariableExpression(v) {
-    return cName(v.referent);
-  },
-  UnaryExpression(e) {
-    return `(${makeOp(e.op)} ${gen(e.operand)})`;
-  },
-  BinaryExpression(e) {
-    return `(${gen(e.left)} ${makeOp(e.op)} ${gen(e.right)})`;
-  },
+Program.prototype.gen = function() {
+  indentLevel = 0;
+  emit('#include <stdio.h>');
+  emit('#include <stdbool.h>');
+  emit('int main() {');
+  this.block.gen();
+  indentLevel += 1;
+  emit('return 0;');
+  indentLevel -= 1;
+  emit('}');
 };
 
-function gen(e) {
-  return generator[e.constructor.name](e);
-}
+Block.prototype.gen = function() {
+  indentLevel += 1;
+  this.statements.forEach(s => s.gen());
+  indentLevel -= 1;
+};
 
-module.exports = gen;
+VariableDeclaration.prototype.gen = function() {
+  emit(`${this.type.name} ${cName(this)} = 0;`);
+};
+
+AssignmentStatement.prototype.gen = function() {
+  emit(`${this.target.gen()} = ${this.source.gen()};`);
+};
+
+ReadStatement.prototype.gen = function() {
+  this.varexps.forEach(v => emit(`scanf("%d\\n", &${cName(v.referent)});`));
+};
+
+WriteStatement.prototype.gen = function() {
+  this.expressions.forEach(e => emit(`printf("%d\\n", ${e.gen()});`));
+};
+
+WhileStatement.prototype.gen = function() {
+  emit(`while (${this.condition.gen()}) {`);
+  this.body.gen();
+  emit('}');
+};
+
+IntegerLiteral.prototype.gen = function() {
+  return this.value;
+};
+
+BooleanLiteral.prototype.gen = function() {
+  return this.value;
+};
+
+VariableExpression.prototype.gen = function() {
+  return cName(this.referent);
+};
+
+UnaryExpression.prototype.gen = function() {
+  return `(${makeOp(this.op)} ${this.operand.gen()})`;
+};
+
+BinaryExpression.prototype.gen = function() {
+  return `(${this.left.gen()} ${makeOp(this.op)} ${this.right.gen()})`;
+};

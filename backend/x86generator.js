@@ -1,159 +1,183 @@
-const usedVariables = new Set();
+const {
+  Program,
+  Block,
+  VariableDeclaration,
+  AssignmentStatement,
+  ReadStatement,
+  WriteStatement,
+  WhileStatement,
+  IntegerLiteral,
+  BooleanLiteral,
+  VariableExpression,
+  UnaryExpression,
+  BinaryExpression,
+} = require('../ast');
 
-module.exports = gen;
+const usedVariables = new Set();
 
 const makeVariable = (() => {
   let lastId = 0;
   const map = new Map();
-  return (v) => {
-    if (!map.has(v)) map.set(v, ++lastId); // eslint-disable-line no-plusplus
+  return v => {
+    if (!map.has(v)) map.set(v, ++lastId);
     return `_${v.id}_${map.get(v)}`;
   };
 })();
 
 const makeLabel = (() => {
   let labelsGenerated = 0;
-  return () => `L${++labelsGenerated}`; // eslint-disable-line no-plusplus
+  return () => `L${++labelsGenerated}`;
 })();
 
-function gen(e) {
-  return generator[e.constructor.name](e);
-}
+Program.prototype.gen = function() {
+  emit('.globl', '_main');
+  emit('.text');
+  emitLabel('_main');
+  emit('push', '%rbp');
+  this.block.gen();
+  emit('pop', '%rbp');
+  emit('ret');
+  emit('.data');
+  emitLabel('READ');
+  emit('.ascii', '"%d\\0\\0"'); // extra 0 for alignment
+  emitLabel('WRITE');
+  emit('.ascii', '"%d\\n\\0"');
+  usedVariables.forEach(s => {
+    emitLabel(s);
+    emit('.quad', '0');
+  });
+};
 
-const generator = {
-
-  Program(program) {
-    emit('.globl', '_main');
-    emit('.text');
-    emitLabel('_main');
-    emit('push', '%rbp');
-    gen(program.block);
-    emit('pop', '%rbp');
-    emit('ret');
-    emit('.data');
-    emitLabel('READ');
-    emit('.ascii', '"%d\\0\\0"'); // extra 0 for alignment
-    emitLabel('WRITE');
-    emit('.ascii', '"%d\\n\\0"');
-    usedVariables.forEach((s) => {
-      emitLabel(s);
-      emit('.quad', '0');
-    });
-  },
-
-  Block(block) {
-    block.statements.forEach((statement) => {
-      gen(statement);
-      allocator.freeAllRegisters();
-    });
-  },
-
-  VariableDeclaration() {
-    // Intentionally empty
-  },
-
-  AssignmentStatement(s) {
-    let source = gen(s.source);
-    const destination = gen(s.target);
-    if (source instanceof MemoryOperand && destination instanceof MemoryOperand) {
-      const oldSource = source;
-      source = allocator.makeRegisterOperand();
-      emit('mov', oldSource, source);
-    }
-    emit('mov', source, destination);
-  },
-
-  ReadStatement(s) {
-    // Call scanf from C lib, format string in rdi, operand in rsi
-    s.varexps.forEach((v) => {
-      emit('mov', gen(v), '%rsi');
-      emit('lea', 'READ(%rip)', '%rdi');
-      emit('xor', '%rax', '%rax');
-      emit('call', '_scanf');
-    });
-  },
-
-  WriteStatement(s) {
-    // Call printf from C lib, format string in rdi, operand in rsi, rax=0
-    s.expressions.forEach((e) => {
-      emit('mov', gen(e), '%rsi');
-      emit('lea', 'WRITE(%rip)', '%rdi');
-      emit('xor', '%rax', '%rax');
-      emit('call', '_printf');
-    });
-  },
-
-  WhileStatement(s) {
-    const top = makeLabel();
-    const bottom = makeLabel();
-    emitLabel(top);
-    const condition = gen(s.condition);
-    emitJumpIfFalse(condition, bottom);
+Block.prototype.gen = function() {
+  this.statements.forEach(statement => {
+    statement.gen();
     allocator.freeAllRegisters();
-    gen(s.body);
-    emit('jmp', top);
-    emitLabel(bottom);
-  },
+  });
+};
 
-  IntegerLiteral(literal) {
-    return new ImmediateOperand(literal.value);
-  },
+VariableDeclaration.prototype.gen = function() {
+  // Intentionally empty
+};
 
-  BooleanLiteral(literal) {
-    return new ImmediateOperand([false, true].indexOf(literal.toString()));
-  },
+AssignmentStatement.prototype.gen = function() {
+  let source = this.source.gen();
+  const destination = this.target.gen();
+  if (source instanceof MemoryOperand && destination instanceof MemoryOperand) {
+    const oldSource = source;
+    source = allocator.makeRegisterOperand();
+    emit('mov', oldSource, source);
+  }
+  emit('mov', source, destination);
+};
 
-  VariableExpression(v) {
-    const name = makeVariable(v.referent);
-    usedVariables.add(name);
-    return new MemoryOperand(name);
-  },
+ReadStatement.prototype.gen = function() {
+  // Call scanf from C lib, format string in rdi, operand in rsi
+  this.varexps.forEach(v => {
+    emit('mov', v.gen(), '%rsi');
+    emit('lea', 'READ(%rip)', '%rdi');
+    emit('xor', '%rax', '%rax');
+    emit('call', '_scanf');
+  });
+};
 
-  UnaryExpression(e) {
-    const result = allocator.ensureRegister(gen(e.operand));
-    const instruction = { '-': 'neg', not: 'not' }[e.op];
-    emit(instruction, result);
+WriteStatement.prototype.gen = function() {
+  // Call printf from C lib, format string in rdi, operand in rsi, rax=0
+  this.expressions.forEach(e => {
+    emit('mov', e.gen(), '%rsi');
+    emit('lea', 'WRITE(%rip)', '%rdi');
+    emit('xor', '%rax', '%rax');
+    emit('call', '_printf');
+  });
+};
+
+WhileStatement.prototype.gen = function() {
+  const top = makeLabel();
+  const bottom = makeLabel();
+  emitLabel(top);
+  const condition = this.condition.gen();
+  emitJumpIfFalse(condition, bottom);
+  allocator.freeAllRegisters();
+  this.body.gen();
+  emit('jmp', top);
+  emitLabel(bottom);
+};
+
+IntegerLiteral.prototype.gen = function() {
+  return new ImmediateOperand(this.value);
+};
+
+BooleanLiteral.prototype.gen = function() {
+  return new ImmediateOperand([false, true].indexOf(this.value.toString()));
+};
+
+VariableExpression.prototype.gen = function() {
+  const name = makeVariable(this.referent);
+  usedVariables.add(name);
+  return new MemoryOperand(name);
+};
+
+UnaryExpression.prototype.gen = function() {
+  const result = allocator.ensureRegister(this.operand.gen());
+  const instruction = { '-': 'neg', not: 'not' }[this.op];
+  emit(instruction, result);
+  return result;
+};
+
+BinaryExpression.prototype.gen = function() {
+  const left = this.left.gen();
+  const result =
+    this.op === '/' ? allocator.makeRegisterOperandFor('rax') : allocator.ensureRegister(left);
+
+  if (this.op === 'and') {
+    emitShortCircuit('je', this, result);
     return result;
-  },
+  }
 
-  BinaryExpression(e) {
-    const left = gen(e.left);
-    const result = (e.op === '/') ?
-      allocator.makeRegisterOperandFor('rax') :
-      allocator.ensureRegister(left);
-
-    if (e.op === 'and') {
-      emitShortCircuit('je', e, result);
-      return result;
-    }
-
-    if (e.op === 'or') {
-      emitShortCircuit('jne', e, result);
-      return result;
-    }
-
-    const right = gen(e.right);
-
-    if (e.op === '/') {
-      emit('movq', left, result);
-      emit('cqto');
-      emit('idivq', allocator.nonImmediate(right));
-    } else {
-      switch (e.op) {
-        case '+': emit('addq', right, result); break;
-        case '-': emit('subq', right, result); break;
-        case '*': emit('imulq', right, result); break;
-        case '<': emitComparison('setl', right, result); break;
-        case '<=': emitComparison('setle', right, result); break;
-        case '==': emitComparison('sete', right, result); break;
-        case '!=': emitComparison('setne', right, result); break;
-        case '>=': emitComparison('setge', right, result); break;
-        case '>': emitComparison('setg', right, result); break;
-        default: break;
-      }
-    }
+  if (this.op === 'or') {
+    emitShortCircuit('jne', this, result);
     return result;
-  },
+  }
+
+  const right = this.right.gen();
+
+  if (this.op === '/') {
+    emit('movq', left, result);
+    emit('cqto');
+    emit('idivq', allocator.nonImmediate(right));
+  } else {
+    switch (this.op) {
+      case '+':
+        emit('addq', right, result);
+        break;
+      case '-':
+        emit('subq', right, result);
+        break;
+      case '*':
+        emit('imulq', right, result);
+        break;
+      case '<':
+        emitComparison('setl', right, result);
+        break;
+      case '<=':
+        emitComparison('setle', right, result);
+        break;
+      case '==':
+        emitComparison('sete', right, result);
+        break;
+      case '!=':
+        emitComparison('setne', right, result);
+        break;
+      case '>=':
+        emitComparison('setge', right, result);
+        break;
+      case '>':
+        emitComparison('setg', right, result);
+        break;
+      default:
+        break;
+    }
+  }
+  return result;
 };
 
 function emitLabel(label) {
@@ -171,7 +195,7 @@ function emitShortCircuit(operation, expression, destination) {
   const skip = makeLabel();
   emit('cmp', '$0', destination);
   emit(operation, skip);
-  const right = gen(expression.right);
+  const right = expression.right.gen();
   emit('mov', right, destination);
   emitLabel(skip);
 }

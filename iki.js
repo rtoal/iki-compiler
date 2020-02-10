@@ -15,8 +15,7 @@ const util = require('util');
 const parse = require('./ast/parser');
 require('./semantics/analyzer');
 require('./semantics/optimizer');
-
-const generate = require(`./backend/${argv.target}generator`);
+require(`./backend/${argv.target}generator`);
 
 fs.readFile(argv._[0], 'utf-8', (error, text) => {
   if (error) {
@@ -36,5 +35,5 @@ fs.readFile(argv._[0], 'utf-8', (error, text) => {
     console.log(util.inspect(program, { depth: null }));
     return;
   }
-  generate(program);
+  program.gen();
 });
