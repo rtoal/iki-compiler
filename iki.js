@@ -12,9 +12,11 @@ const { argv } = require('yargs')
 
 const fs = require('fs');
 const util = require('util');
-const parse = require('./parser');
+const parse = require('./ast/parser');
+require('./semantics/analyzer');
+require('./semantics/optimizer');
 
-const generate = require(`./generators/${argv.target}generator`);
+const generate = require(`./backend/${argv.target}generator`);
 
 fs.readFile(argv._[0], 'utf-8', (error, text) => {
   if (error) {

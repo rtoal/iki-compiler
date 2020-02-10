@@ -1,20 +1,30 @@
 {
   "name": "iki-compiler",
   "version": "0.3.0",
-  "description": "A simple compiler for the Iki programming language",
-  "dependencies": {
-    "yargs": "latest",
-    "ohm-js": "latest"
+  "description": "A compiler for the Iki programming language",
+  "main": "iki.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rtoal/iki-compiler.git"
+  },
+  "author": "Ray Toal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rtoal/iki-compiler/issues"
+  },
+  "homepage": "https://github.com/rtoal/iki-compiler#readme",
+  "scripts": {
+    "test": "jest --collect-coverage"
   },
   "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0",
-    "mocha": "latest"
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "jest": "^24.1.0",
+    "prettier": "1.19.1"
   },
-  "scripts": {
-    "lint": "./node_modules/.bin/eslint **/*.js;exit 0",
-    "start": "node iki.js",
-    "test": "mocha"
+  "dependencies": {
+    "js-beautify": "^1.10.0",
+    "ohm-js": "^0.14.0",
+    "yargs": "^13.2.2"
   }
 }
