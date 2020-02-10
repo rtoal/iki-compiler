@@ -1,1 +1,12 @@
+var x: int;
+var y: bool;
+
 write 2+3;
+write (9-2*7)/-5;
+
+x = x;
+
+while false loop
+  write 11111;
+end;
+

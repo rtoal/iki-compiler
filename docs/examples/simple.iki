@@ -1,10 +1,6 @@
 -- Not hello, world
 var x: int;
-while true or 1 <= 5 loop
-  var y: bool;
-  var z: int;
-  read x, z;
-  write 9 - 3 * x;
+while false or x <= 10 loop  -- something to optimize
+  x = x + 1;
+  write x, x * x;  -- oooh squares
 end;
-
-write x;
