@@ -113,27 +113,29 @@ Object.assign(Expression.prototype, {
 
 Object.assign(BinaryExpression.prototype, {
   foldIntegerConstants() {
+    const x = Number(this.left.value);
+    const y = Number(this.right.value);
     switch (this.op) {
       case '+':
-        return new IntegerLiteral(+this.left + this.right);
+        return new IntegerLiteral(x + y);
       case '-':
-        return new IntegerLiteral(+this.left - this.right);
+        return new IntegerLiteral(x - y);
       case '*':
-        return new IntegerLiteral(+this.left * this.right);
+        return new IntegerLiteral(x * y);
       case '/':
-        return new IntegerLiteral(+this.left / this.right);
+        return new IntegerLiteral(x / y);
       case '<':
-        return new BooleanLiteral(+this.left < this.right);
+        return new BooleanLiteral(x < y);
       case '<=':
-        return new BooleanLiteral(+this.left <= this.right);
+        return new BooleanLiteral(x <= y);
       case '==':
-        return new BooleanLiteral(+this.left === this.right);
+        return new BooleanLiteral(x === y);
       case '!=':
-        return new BooleanLiteral(+this.left !== this.right);
+        return new BooleanLiteral(x !== y);
       case '>=':
-        return new BooleanLiteral(+this.left >= this.right);
+        return new BooleanLiteral(x >= y);
       case '>':
-        return new BooleanLiteral(+this.left > this.right);
+        return new BooleanLiteral(x > y);
       default:
         return this;
     }
