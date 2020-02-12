@@ -20,7 +20,8 @@ function emit(line) {
   console.log(`${' '.repeat(indentPadding * indentLevel)}${line}`);
 }
 
-function makeOp(op) {
+// The JavaScript operator corresponding to the given Iki operator.
+function jsOp(op) {
   return { not: '!', and: '&&', or: '||', '==': '===', '!=': '!==' }[op] || op;
 }
 
@@ -88,9 +89,9 @@ VariableExpression.prototype.gen = function() {
 };
 
 UnaryExpression.prototype.gen = function() {
-  return `(${makeOp(this.op)} ${this.operand.gen()})`;
+  return `(${jsOp(this.op)} ${this.operand.gen()})`;
 };
 
 BinaryExpression.prototype.gen = function() {
-  return `(${this.left.gen()} ${makeOp(this.op)} ${this.right.gen()})`;
+  return `(${this.left.gen()} ${jsOp(this.op)} ${this.right.gen()})`;
 };
