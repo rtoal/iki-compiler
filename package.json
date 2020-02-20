@@ -14,7 +14,8 @@
   },
   "homepage": "https://github.com/rtoal/iki-compiler#readme",
   "scripts": {
-    "test": "jest --collect-coverage"
+    "test": "jest --collect-coverage",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "eslint": "^6.8.0",
