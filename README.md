@@ -51,140 +51,55 @@ You can generate the abstract syntax tree with `-a`:
 ```
 $ ./iki.js -a docs/examples/simple.iki
 Program {
-  block: Block {
-    statements: [
-      VarDec { id: 'x', type: Type { name: 'int' } },
-      WhileStatement {
-        condition: BinaryExp {
-          op: 'or',
-          left: BoolLit { value: false },
-          right: BinaryExp {
-            op: '<=',
-            left: VarExp { name: 'x' },
-            right: IntLit { value: '10' }
-          }
-        },
-        body: Block {
-          statements: [
-            AssignmentStatement {
-              target: VarExp { name: 'x' },
-              source: BinaryExp {
-                op: '+',
-                left: VarExp { name: 'x' },
-                right: IntLit { value: '1' }
-              }
-            },
-            WriteStatement {
-              expressions: [
-                VarExp { name: 'x' },
-                BinaryExp {
-                  op: '*',
-                  left: VarExp { name: 'x' },
-                  right: VarExp { name: 'x' }
-                }
-              ]
-            }
-          ]
-        }
-      }
-    ]
-  }
-}
+  block:
+   Block {
+     statements:
+      [ VarDec { id: 'x', type: 'int' },
+        WhileStatement {
+          condition:
+           BinaryExp {
+             op: 'or',
+             left: BoolLit { value: false },
+             right:
+              BinaryExp { op: '<=', left: VarExp { name: 'x' }, right: IntLit { value: '10' } } },
+          body:
+           Block {
+             statements:
+              [ AssignmentStatement {
+                  target: VarExp { name: 'x' },
+                  source: BinaryExp { op: '+', left: VarExp { name: 'x' }, right: IntLit { value: '1' } } },
+                WriteStatement {
+                  expressions:
+                   [ VarExp { name: 'x' },
+                     BinaryExp { op: '*', left: VarExp { name: 'x' }, right: VarExp { name: 'x' } } ] } ] } } ] } }
 ```
 
 And the semantic graph with `-i`:
 
 ```
 $ ./iki.js -i docs/examples/simple.iki
-Program {
-  block: Block {
-    statements: [
-      VarDec { id: 'x', type: Type { name: 'int' } },
-      WhileStatement {
-        condition: BinaryExp {
-          op: 'or',
-          left: BoolLit { value: false, type: Type { name: 'bool' } },
-          right: BinaryExp {
-            op: '<=',
-            left: VarExp {
-              name: 'x',
-              referent: VarDec {
-                id: 'x',
-                type: Type { name: 'int' }
-              },
-              type: Type { name: 'int' }
-            },
-            right: IntLit { value: '10', type: Type { name: 'int' } },
-            type: Type { name: 'bool' }
-          },
-          type: Type { name: 'bool' }
-        },
-        body: Block {
-          statements: [
-            AssignmentStatement {
-              target: VarExp {
-                name: 'x',
-                referent: VarDec {
-                  id: 'x',
-                  type: Type { name: 'int' }
-                },
-                type: Type { name: 'int' }
-              },
-              source: BinaryExp {
-                op: '+',
-                left: VarExp {
-                  name: 'x',
-                  referent: VarDec {
-                    id: 'x',
-                    type: Type { name: 'int' }
-                  },
-                  type: Type { name: 'int' }
-                },
-                right: IntLit {
-                  value: '1',
-                  type: Type { name: 'int' }
-                },
-                type: Type { name: 'int' }
-              }
-            },
-            WriteStatement {
-              expressions: [
-                VarExp {
-                  name: 'x',
-                  referent: VarDec {
-                    id: 'x',
-                    type: Type { name: 'int' }
-                  },
-                  type: Type { name: 'int' }
-                },
-                BinaryExp {
-                  op: '*',
-                  left: VarExp {
-                    name: 'x',
-                    referent: VarDec {
-                      id: 'x',
-                      type: Type { name: 'int' }
-                    },
-                    type: Type { name: 'int' }
-                  },
-                  right: VarExp {
-                    name: 'x',
-                    referent: VarDec {
-                      id: 'x',
-                      type: Type { name: 'int' }
-                    },
-                    type: Type { name: 'int' }
-                  },
-                  type: Type { name: 'int' }
-                }
-              ]
-            }
-          ]
-        }
-      }
-    ]
-  }
-}
+0 (Program) block=#1
+1 (Block) statements=[#2,#4]
+2 (VarDec) id='x' type=#3
+3 (Type) name='int'
+4 (WhileStatement) condition=#5 body=#11
+5 (BinaryExp) op='or' left=#6 right=#8 type=#7
+6 (BoolLit) value=false type=#7
+7 (Type) name='Bool'
+8 (BinaryExp) op='<=' left=#9 right=#10 type=#7
+9 (VarExp) name='x' referent=#2 type=#3
+10 (IntLit) value='10' type=#3
+11 (Block) statements=[#12,#17]
+12 (AssignmentStatement) target=#13 source=#14
+13 (VarExp) name='x' referent=#2 type=#3
+14 (BinaryExp) op='+' left=#15 right=#16 type=#3
+15 (VarExp) name='x' referent=#2 type=#3
+16 (IntLit) value='1' type=#3
+17 (WriteStatement) expressions=[#18,#19]
+18 (VarExp) name='x' referent=#2 type=#3
+19 (BinaryExp) op='*' left=#20 right=#21 type=#3
+20 (VarExp) name='x' referent=#2 type=#3
+21 (VarExp) name='x' referent=#2 type=#3
 ```
 
 To translate the program to JavaScript, use `--target=js` or no `--target` option at all:

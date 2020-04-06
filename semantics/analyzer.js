@@ -16,6 +16,10 @@ const {
 const { initialContext } = require('./context');
 const { BoolType, IntType } = require('./builtins');
 
+module.exports = function(program) {
+  program.analyze(initialContext);
+};
+
 Program.prototype.analyze = function() {
   this.block.analyze(initialContext());
 };

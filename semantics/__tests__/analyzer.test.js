@@ -6,7 +6,7 @@
  */
 
 const parse = require('../../ast/parser');
-require('../analyzer');
+const analyze = require('../analyzer');
 
 const program = String.raw`
 -- This Iki program has close to all syntactic and semantic forms
@@ -36,7 +36,7 @@ describe('The semantic analyzer', () => {
   test('accepts the mega program', done => {
     const astRoot = parse(program);
     expect(astRoot).toBeTruthy();
-    astRoot.analyze();
+    analyze(astRoot);
     expect(astRoot).toBeTruthy();
     done();
   });
