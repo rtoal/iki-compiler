@@ -11,14 +11,14 @@ const {
   Block,
   IntType,
   BoolType,
-  VariableDeclaration,
+  VarDec,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
   WhileStatement,
-  IntegerLiteral,
-  BooleanLiteral,
-  VariableExpression,
+  IntLit,
+  BoolLit,
+  VarExp,
   BinaryExpression,
   UnaryExpression,
 } = require('.');
@@ -34,7 +34,7 @@ const astBuilder = grammar.createSemantics().addOperation('ast', {
     return new Block(s.ast());
   },
   Stmt_declaration(_1, id, _2, type) {
-    return new VariableDeclaration(id.sourceString, type.ast());
+    return new VarDec(id.sourceString, type.ast());
   },
   Stmt_assignment(varexp, _, exp) {
     return new AssignmentStatement(varexp.ast(), exp.ast());
@@ -73,13 +73,13 @@ const astBuilder = grammar.createSemantics().addOperation('ast', {
     return e.ast();
   },
   boollit(_) {
-    return new BooleanLiteral(this.sourceString === 'true');
+    return new BoolLit(this.sourceString === 'true');
   },
   intlit(_) {
-    return new IntegerLiteral(this.sourceString);
+    return new IntLit(this.sourceString);
   },
   VarExp(_) {
-    return new VariableExpression(this.sourceString);
+    return new VarExp(this.sourceString);
   },
 });
 /* eslint-enable no-unused-vars */

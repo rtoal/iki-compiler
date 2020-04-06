@@ -12,16 +12,16 @@ const parse = require('../parser');
 const {
   Program,
   Block,
-  VariableDeclaration,
+  VarDec,
   IntType,
   BoolType,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
   WhileStatement,
-  BooleanLiteral,
-  IntegerLiteral,
-  VariableExpression,
+  BoolLit,
+  IntLit,
+  VarExp,
   UnaryExpression,
   BinaryExpression,
 } = require('..');
@@ -29,9 +29,7 @@ const {
 const fixture = {
   hello: [
     String.raw`write 0, x;`,
-    new Program(
-      new Block([new WriteStatement([new IntegerLiteral('0'), new VariableExpression('x')])])
-    ),
+    new Program(new Block([new WriteStatement([new IntLit('0'), new VarExp('x')])])),
   ],
 
   whiles: [
@@ -39,8 +37,8 @@ const fixture = {
     new Program(
       new Block([
         new WhileStatement(
-          new BooleanLiteral(false),
-          new Block([new AssignmentStatement(new VariableExpression('x'), new IntegerLiteral('3'))])
+          new BoolLit(false),
+          new Block([new AssignmentStatement(new VarExp('x'), new IntLit('3'))])
         ),
       ])
     ),
@@ -48,24 +46,22 @@ const fixture = {
 
   declarations: [
     String.raw`var x: int; var y: bool;`,
-    new Program(
-      new Block([new VariableDeclaration('x', IntType), new VariableDeclaration('y', BoolType)])
-    ),
+    new Program(new Block([new VarDec('x', IntType), new VarDec('y', BoolType)])),
   ],
 
   math: [
     String.raw`read x, y; write 2 * (-5 > 7+1);`,
     new Program(
       new Block([
-        new ReadStatement([new VariableExpression('x'), new VariableExpression('y')]),
+        new ReadStatement([new VarExp('x'), new VarExp('y')]),
         new WriteStatement([
           new BinaryExpression(
             '*',
-            new IntegerLiteral('2'),
+            new IntLit('2'),
             new BinaryExpression(
               '>',
-              new UnaryExpression('-', new IntegerLiteral('5')),
-              new BinaryExpression('+', new IntegerLiteral('7'), new IntegerLiteral('1'))
+              new UnaryExpression('-', new IntLit('5')),
+              new BinaryExpression('+', new IntLit('7'), new IntLit('1'))
             )
           ),
         ]),
@@ -80,12 +76,8 @@ const fixture = {
         new WriteStatement([
           new BinaryExpression(
             'and',
-            new VariableExpression('x'),
-            new BinaryExpression(
-              'or',
-              new UnaryExpression('not', new VariableExpression('y')),
-              new VariableExpression('x')
-            )
+            new VarExp('x'),
+            new BinaryExpression('or', new UnaryExpression('not', new VarExp('y')), new VarExp('x'))
           ),
         ]),
       ])

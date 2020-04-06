@@ -1,15 +1,15 @@
 const {
   Program,
   Block,
-  VariableDeclaration,
+  VarDec,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
   WhileStatement,
   Expression,
-  IntegerLiteral,
-  BooleanLiteral,
-  VariableExpression,
+  IntLit,
+  BoolLit,
+  VarExp,
   UnaryExpression,
   BinaryExpression,
 } = require('../ast');
@@ -24,14 +24,14 @@ Block.prototype.optimize = function() {
   return this;
 };
 
-VariableDeclaration.prototype.optimize = function() {
+VarDec.prototype.optimize = function() {
   return this;
 };
 
 AssignmentStatement.prototype.optimize = function() {
   this.target = this.target.optimize();
   this.source = this.source.optimize();
-  if (this.source instanceof VariableExpression && this.target.referent === this.source.referent) {
+  if (this.source instanceof VarExp && this.target.referent === this.source.referent) {
     return null;
   }
   return this;
@@ -49,7 +49,7 @@ WriteStatement.prototype.optimize = function() {
 WhileStatement.prototype.optimize = function() {
   this.condition = this.condition.optimize();
   this.body = this.body.optimize();
-  if (this.condition instanceof BooleanLiteral && this.condition.value === false) {
+  if (this.condition instanceof BoolLit && this.condition.value === false) {
     return null;
   }
   return this;
@@ -61,11 +61,11 @@ Expression.prototype.optimize = function() {
 
 UnaryExpression.prototype.optimize = function() {
   this.operand = this.operand.optimize();
-  if (this.op === 'not' && this.operand instanceof BooleanLiteral) {
-    return new BooleanLiteral(!this.operand.value);
+  if (this.op === 'not' && this.operand instanceof BoolLit) {
+    return new BoolLit(!this.operand.value);
   }
-  if (this.op === '-' && this.operand instanceof IntegerLiteral) {
-    return new IntegerLiteral(-this.operand.value);
+  if (this.op === '-' && this.operand instanceof IntLit) {
+    return new IntLit(-this.operand.value);
   }
   return this;
 };
@@ -73,55 +73,51 @@ UnaryExpression.prototype.optimize = function() {
 BinaryExpression.prototype.optimize = function() {
   this.left = this.left.optimize();
   this.right = this.right.optimize();
-  if (this.left instanceof IntegerLiteral && this.right instanceof IntegerLiteral) {
+  if (this.left instanceof IntLit && this.right instanceof IntLit) {
     return this.foldIntegerConstants();
-  } else if (this.left instanceof BooleanLiteral && this.right instanceof BooleanLiteral) {
+  } else if (this.left instanceof BoolLit && this.right instanceof BoolLit) {
     return this.foldBooleanConstants();
   } else if (this.op === '+') {
     if (this.right.isZero()) return this.left;
     if (this.left.isZero()) return this.right;
   } else if (this.op === '-') {
     if (this.right.isZero()) return this.left;
-    if (this.left.sameVariableAs(this.right)) return new IntegerLiteral(0);
+    if (this.left.sameVariableAs(this.right)) return new IntLit(0);
   } else if (this.op === '*') {
     if (this.right.isOne()) return this.left;
     if (this.left.isOne()) return this.right;
-    if (this.right.isZero()) return new IntegerLiteral(0);
-    if (this.left.isZero()) return new IntegerLiteral(0);
+    if (this.right.isZero()) return new IntLit(0);
+    if (this.left.isZero()) return new IntLit(0);
   } else if (this.op === '/') {
     if (this.right.isOne()) return this.left;
-    if (this.left.sameVariableAs(this.right)) return new IntegerLiteral(1);
+    if (this.left.sameVariableAs(this.right)) return new IntLit(1);
   } else if (this.op === 'or') {
     if (this.right.isFalse()) return this.left;
     if (this.left.isFalse()) return this.right;
-    if (this.left.isTrue() || this.right.isTrue()) return new BooleanLiteral(true);
+    if (this.left.isTrue() || this.right.isTrue()) return new BoolLit(true);
   } else if (this.op === 'and') {
     if (this.right.isTrue()) return this.left;
     if (this.left.isTrue()) return this.right;
-    if (this.left.isFalse() || this.right.isFalse()) return new BooleanLiteral(false);
+    if (this.left.isFalse() || this.right.isFalse()) return new BoolLit(false);
   }
   return this;
 };
 
 Object.assign(Expression.prototype, {
   isZero() {
-    return this instanceof IntegerLiteral && this.value === 0;
+    return this instanceof IntLit && this.value === 0;
   },
   isOne() {
-    return this instanceof IntegerLiteral && this.value === 1;
+    return this instanceof IntLit && this.value === 1;
   },
   isFalse() {
-    return this instanceof BooleanLiteral && this.value === false;
+    return this instanceof BoolLit && this.value === false;
   },
   isTrue() {
-    return this instanceof BooleanLiteral && this.value === true;
+    return this instanceof BoolLit && this.value === true;
   },
   sameVariableAs(e) {
-    return (
-      this instanceof VariableExpression &&
-      e instanceof VariableExpression &&
-      this.referent === e.referent
-    );
+    return this instanceof VarExp && e instanceof VarExp && this.referent === e.referent;
   },
 });
 
@@ -131,25 +127,25 @@ Object.assign(BinaryExpression.prototype, {
     const y = Number(this.right.value);
     switch (this.op) {
       case '+':
-        return new IntegerLiteral(x + y);
+        return new IntLit(x + y);
       case '-':
-        return new IntegerLiteral(x - y);
+        return new IntLit(x - y);
       case '*':
-        return new IntegerLiteral(x * y);
+        return new IntLit(x * y);
       case '/':
-        return new IntegerLiteral(x / y);
+        return new IntLit(x / y);
       case '<':
-        return new BooleanLiteral(x < y);
+        return new BoolLit(x < y);
       case '<=':
-        return new BooleanLiteral(x <= y);
+        return new BoolLit(x <= y);
       case '==':
-        return new BooleanLiteral(x === y);
+        return new BoolLit(x === y);
       case '!=':
-        return new BooleanLiteral(x !== y);
+        return new BoolLit(x !== y);
       case '>=':
-        return new BooleanLiteral(x >= y);
+        return new BoolLit(x >= y);
       case '>':
-        return new BooleanLiteral(x > y);
+        return new BoolLit(x > y);
       default:
         return this;
     }
@@ -157,13 +153,13 @@ Object.assign(BinaryExpression.prototype, {
   foldBooleanConstants() {
     switch (this.op) {
       case '==':
-        return new BooleanLiteral(this.left === this.right);
+        return new BoolLit(this.left === this.right);
       case '!=':
-        return new BooleanLiteral(this.left !== this.right);
+        return new BoolLit(this.left !== this.right);
       case 'and':
-        return new BooleanLiteral(this.left && this.right);
+        return new BoolLit(this.left && this.right);
       case 'or':
-        return new BooleanLiteral(this.left || this.right);
+        return new BoolLit(this.left || this.right);
       default:
         return this;
     }

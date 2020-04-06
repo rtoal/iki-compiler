@@ -24,7 +24,7 @@ fs.readFile(argv._[0], 'utf-8', (error, text) => {
   }
   let program = parse(text);
   if (argv.a) {
-    console.log(util.inspect(program, { depth: null }));
+    console.log(util.inspect(program, { depth: null, compact: true }));
     return;
   }
   program.analyze();

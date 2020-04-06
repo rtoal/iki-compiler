@@ -4,14 +4,14 @@ const {
   Type,
   IntType,
   BoolType,
-  VariableDeclaration,
+  VarDec,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
   WhileStatement,
-  IntegerLiteral,
-  BooleanLiteral,
-  VariableExpression,
+  IntLit,
+  BoolLit,
+  VarExp,
   UnaryExpression,
   BinaryExpression,
 } = require('../ast');
@@ -26,7 +26,7 @@ Block.prototype.analyze = function(context) {
   this.statements.forEach(s => s.analyze(localContext));
 };
 
-VariableDeclaration.prototype.analyze = function(context) {
+VarDec.prototype.analyze = function(context) {
   context.variableMustNotBeAlreadyDeclared(this.id);
   context.addVariable(this.id, this);
 };
@@ -80,15 +80,15 @@ WhileStatement.prototype.analyze = function(context) {
   this.body.analyze(context);
 };
 
-IntegerLiteral.prototype.analyze = function() {
+IntLit.prototype.analyze = function() {
   this.type = IntType;
 };
 
-BooleanLiteral.prototype.analyze = function() {
+BoolLit.prototype.analyze = function() {
   this.type = BoolType;
 };
 
-VariableExpression.prototype.analyze = function(context) {
+VarExp.prototype.analyze = function(context) {
   this.referent = context.lookupVariable(this.name);
   this.type = this.referent.type;
 };

@@ -53,34 +53,34 @@ $ ./iki.js -a docs/examples/simple.iki
 Program {
   block: Block {
     statements: [
-      VariableDeclaration { id: 'x', type: Type { name: 'int' } },
+      VarDec { id: 'x', type: Type { name: 'int' } },
       WhileStatement {
         condition: BinaryExpression {
           op: 'or',
-          left: BooleanLiteral { value: false },
+          left: BoolLit { value: false },
           right: BinaryExpression {
             op: '<=',
-            left: VariableExpression { name: 'x' },
-            right: IntegerLiteral { value: '10' }
+            left: VarExp { name: 'x' },
+            right: IntLit { value: '10' }
           }
         },
         body: Block {
           statements: [
             AssignmentStatement {
-              target: VariableExpression { name: 'x' },
+              target: VarExp { name: 'x' },
               source: BinaryExpression {
                 op: '+',
-                left: VariableExpression { name: 'x' },
-                right: IntegerLiteral { value: '1' }
+                left: VarExp { name: 'x' },
+                right: IntLit { value: '1' }
               }
             },
             WriteStatement {
               expressions: [
-                VariableExpression { name: 'x' },
+                VarExp { name: 'x' },
                 BinaryExpression {
                   op: '*',
-                  left: VariableExpression { name: 'x' },
-                  right: VariableExpression { name: 'x' }
+                  left: VarExp { name: 'x' },
+                  right: VarExp { name: 'x' }
                 }
               ]
             }
@@ -99,22 +99,22 @@ $ ./iki.js -i docs/examples/simple.iki
 Program {
   block: Block {
     statements: [
-      VariableDeclaration { id: 'x', type: Type { name: 'int' } },
+      VarDec { id: 'x', type: Type { name: 'int' } },
       WhileStatement {
         condition: BinaryExpression {
           op: 'or',
-          left: BooleanLiteral { value: false, type: Type { name: 'bool' } },
+          left: BoolLit { value: false, type: Type { name: 'bool' } },
           right: BinaryExpression {
             op: '<=',
-            left: VariableExpression {
+            left: VarExp {
               name: 'x',
-              referent: VariableDeclaration {
+              referent: VarDec {
                 id: 'x',
                 type: Type { name: 'int' }
               },
               type: Type { name: 'int' }
             },
-            right: IntegerLiteral { value: '10', type: Type { name: 'int' } },
+            right: IntLit { value: '10', type: Type { name: 'int' } },
             type: Type { name: 'bool' }
           },
           type: Type { name: 'bool' }
@@ -122,9 +122,9 @@ Program {
         body: Block {
           statements: [
             AssignmentStatement {
-              target: VariableExpression {
+              target: VarExp {
                 name: 'x',
-                referent: VariableDeclaration {
+                referent: VarDec {
                   id: 'x',
                   type: Type { name: 'int' }
                 },
@@ -132,15 +132,15 @@ Program {
               },
               source: BinaryExpression {
                 op: '+',
-                left: VariableExpression {
+                left: VarExp {
                   name: 'x',
-                  referent: VariableDeclaration {
+                  referent: VarDec {
                     id: 'x',
                     type: Type { name: 'int' }
                   },
                   type: Type { name: 'int' }
                 },
-                right: IntegerLiteral {
+                right: IntLit {
                   value: '1',
                   type: Type { name: 'int' }
                 },
@@ -149,9 +149,9 @@ Program {
             },
             WriteStatement {
               expressions: [
-                VariableExpression {
+                VarExp {
                   name: 'x',
-                  referent: VariableDeclaration {
+                  referent: VarDec {
                     id: 'x',
                     type: Type { name: 'int' }
                   },
@@ -159,17 +159,17 @@ Program {
                 },
                 BinaryExpression {
                   op: '*',
-                  left: VariableExpression {
+                  left: VarExp {
                     name: 'x',
-                    referent: VariableDeclaration {
+                    referent: VarDec {
                       id: 'x',
                       type: Type { name: 'int' }
                     },
                     type: Type { name: 'int' }
                   },
-                  right: VariableExpression {
+                  right: VarExp {
                     name: 'x',
-                    referent: VariableDeclaration {
+                    referent: VarDec {
                       id: 'x',
                       type: Type { name: 'int' }
                     },

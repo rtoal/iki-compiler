@@ -10,7 +10,7 @@ class Block {
   }
 }
 
-class VariableDeclaration {
+class VarDec {
   constructor(id, type) {
     Object.assign(this, { id, type });
   }
@@ -51,21 +51,21 @@ class WhileStatement {
 
 class Expression {}
 
-class BooleanLiteral extends Expression {
+class BoolLit extends Expression {
   constructor(value) {
     super();
     this.value = value;
   }
 }
 
-class IntegerLiteral extends Expression {
+class IntLit extends Expression {
   constructor(value) {
     super();
     this.value = value;
   }
 }
 
-class VariableExpression extends Expression {
+class VarExp extends Expression {
   constructor(name) {
     super();
     this.name = name;
@@ -89,7 +89,7 @@ class BinaryExpression extends Expression {
 module.exports = {
   Program,
   Block,
-  VariableDeclaration,
+  VarDec,
   Type,
   IntType,
   BoolType,
@@ -98,9 +98,9 @@ module.exports = {
   WriteStatement,
   WhileStatement,
   Expression,
-  BooleanLiteral,
-  IntegerLiteral,
-  VariableExpression,
+  BoolLit,
+  IntLit,
+  VarExp,
   UnaryExpression,
   BinaryExpression,
 };

@@ -1,14 +1,14 @@
 const {
   Program,
   Block,
-  VariableDeclaration,
+  VarDec,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
   WhileStatement,
-  IntegerLiteral,
-  BooleanLiteral,
-  VariableExpression,
+  IntLit,
+  BoolLit,
+  VarExp,
   UnaryExpression,
   BinaryExpression,
 } = require('../ast');
@@ -57,7 +57,7 @@ Block.prototype.gen = function() {
   indentLevel -= 1;
 };
 
-VariableDeclaration.prototype.gen = function() {
+VarDec.prototype.gen = function() {
   emit(`${this.type.name} ${cName(this)} = 0;`);
 };
 
@@ -79,15 +79,15 @@ WhileStatement.prototype.gen = function() {
   emit('}');
 };
 
-IntegerLiteral.prototype.gen = function() {
+IntLit.prototype.gen = function() {
   return this.value;
 };
 
-BooleanLiteral.prototype.gen = function() {
+BoolLit.prototype.gen = function() {
   return this.value;
 };
 
-VariableExpression.prototype.gen = function() {
+VarExp.prototype.gen = function() {
   return cName(this.referent);
 };
 

@@ -1,14 +1,14 @@
 const {
   Program,
   Block,
-  VariableDeclaration,
+  VarDec,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
   WhileStatement,
-  IntegerLiteral,
-  BooleanLiteral,
-  VariableExpression,
+  IntLit,
+  BoolLit,
+  VarExp,
   UnaryExpression,
   BinaryExpression,
 } = require('../ast');
@@ -55,7 +55,7 @@ Block.prototype.gen = function() {
   });
 };
 
-VariableDeclaration.prototype.gen = function() {
+VarDec.prototype.gen = function() {
   // Intentionally empty
 };
 
@@ -102,15 +102,15 @@ WhileStatement.prototype.gen = function() {
   emitLabel(bottom);
 };
 
-IntegerLiteral.prototype.gen = function() {
+IntLit.prototype.gen = function() {
   return new ImmediateOperand(this.value);
 };
 
-BooleanLiteral.prototype.gen = function() {
+BoolLit.prototype.gen = function() {
   return new ImmediateOperand([false, true].indexOf(this.value.toString()));
 };
 
-VariableExpression.prototype.gen = function() {
+VarExp.prototype.gen = function() {
   const name = makeVariable(this.referent);
   usedVariables.add(name);
   return new MemoryOperand(name);
