@@ -55,10 +55,10 @@ Program {
     statements: [
       VarDec { id: 'x', type: Type { name: 'int' } },
       WhileStatement {
-        condition: BinaryExpression {
+        condition: BinaryExp {
           op: 'or',
           left: BoolLit { value: false },
-          right: BinaryExpression {
+          right: BinaryExp {
             op: '<=',
             left: VarExp { name: 'x' },
             right: IntLit { value: '10' }
@@ -68,7 +68,7 @@ Program {
           statements: [
             AssignmentStatement {
               target: VarExp { name: 'x' },
-              source: BinaryExpression {
+              source: BinaryExp {
                 op: '+',
                 left: VarExp { name: 'x' },
                 right: IntLit { value: '1' }
@@ -77,7 +77,7 @@ Program {
             WriteStatement {
               expressions: [
                 VarExp { name: 'x' },
-                BinaryExpression {
+                BinaryExp {
                   op: '*',
                   left: VarExp { name: 'x' },
                   right: VarExp { name: 'x' }
@@ -101,10 +101,10 @@ Program {
     statements: [
       VarDec { id: 'x', type: Type { name: 'int' } },
       WhileStatement {
-        condition: BinaryExpression {
+        condition: BinaryExp {
           op: 'or',
           left: BoolLit { value: false, type: Type { name: 'bool' } },
-          right: BinaryExpression {
+          right: BinaryExp {
             op: '<=',
             left: VarExp {
               name: 'x',
@@ -130,7 +130,7 @@ Program {
                 },
                 type: Type { name: 'int' }
               },
-              source: BinaryExpression {
+              source: BinaryExp {
                 op: '+',
                 left: VarExp {
                   name: 'x',
@@ -157,7 +157,7 @@ Program {
                   },
                   type: Type { name: 'int' }
                 },
-                BinaryExpression {
+                BinaryExp {
                   op: '*',
                   left: VarExp {
                     name: 'x',

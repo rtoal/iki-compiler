@@ -1,10 +1,8 @@
 const {
   Program,
   Block,
-  Type,
-  IntType,
-  BoolType,
   VarDec,
+  Type,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
@@ -12,10 +10,11 @@ const {
   IntLit,
   BoolLit,
   VarExp,
-  UnaryExpression,
-  BinaryExpression,
+  UnaryExp,
+  BinaryExp,
 } = require('../ast');
 const { initialContext } = require('./context');
+const { BoolType, IntType } = require('./builtins');
 
 Program.prototype.analyze = function() {
   this.block.analyze(initialContext());
@@ -28,6 +27,7 @@ Block.prototype.analyze = function(context) {
 
 VarDec.prototype.analyze = function(context) {
   context.variableMustNotBeAlreadyDeclared(this.id);
+  this.type = this.type === 'int' ? IntType : BoolType;
   context.addVariable(this.id, this);
 };
 
@@ -93,7 +93,7 @@ VarExp.prototype.analyze = function(context) {
   this.type = this.referent.type;
 };
 
-UnaryExpression.prototype.analyze = function(context) {
+UnaryExp.prototype.analyze = function(context) {
   this.operand.analyze(context);
   if (this.op === 'not') {
     this.operand.type.mustBeBoolean('The "not" operator requires a boolean operand', this.op);
@@ -104,7 +104,7 @@ UnaryExpression.prototype.analyze = function(context) {
   }
 };
 
-BinaryExpression.prototype.analyze = function(context) {
+BinaryExp.prototype.analyze = function(context) {
   this.left.analyze(context);
   this.right.analyze(context);
   if (['<', '<=', '>=', '>'].includes(this.op)) {
@@ -123,7 +123,7 @@ BinaryExpression.prototype.analyze = function(context) {
   }
 };
 
-Object.assign(BinaryExpression.prototype, {
+Object.assign(BinaryExp.prototype, {
   mustHaveIntegerOperands() {
     const errorMessage = `${this.op} must have integer operands`;
     this.left.type.mustBeCompatibleWith(IntType, errorMessage, this.op);

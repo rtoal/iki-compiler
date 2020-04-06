@@ -9,8 +9,8 @@ const {
   IntLit,
   BoolLit,
   VarExp,
-  UnaryExpression,
-  BinaryExpression,
+  UnaryExp,
+  BinaryExp,
 } = require('../ast');
 
 const indentPadding = 2;
@@ -88,10 +88,10 @@ VarExp.prototype.gen = function() {
   return jsName(this.referent);
 };
 
-UnaryExpression.prototype.gen = function() {
+UnaryExp.prototype.gen = function() {
   return `(${jsOp(this.op)} ${this.operand.gen()})`;
 };
 
-BinaryExpression.prototype.gen = function() {
+BinaryExp.prototype.gen = function() {
   return `(${this.left.gen()} ${jsOp(this.op)} ${this.right.gen()})`;
 };

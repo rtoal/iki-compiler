@@ -10,8 +10,8 @@ const {
   IntLit,
   BoolLit,
   VarExp,
-  UnaryExpression,
-  BinaryExpression,
+  UnaryExp,
+  BinaryExp,
 } = require('../ast');
 
 Program.prototype.optimize = function() {
@@ -59,7 +59,7 @@ Expression.prototype.optimize = function() {
   return this;
 };
 
-UnaryExpression.prototype.optimize = function() {
+UnaryExp.prototype.optimize = function() {
   this.operand = this.operand.optimize();
   if (this.op === 'not' && this.operand instanceof BoolLit) {
     return new BoolLit(!this.operand.value);
@@ -70,7 +70,7 @@ UnaryExpression.prototype.optimize = function() {
   return this;
 };
 
-BinaryExpression.prototype.optimize = function() {
+BinaryExp.prototype.optimize = function() {
   this.left = this.left.optimize();
   this.right = this.right.optimize();
   if (this.left instanceof IntLit && this.right instanceof IntLit) {
@@ -121,7 +121,7 @@ Object.assign(Expression.prototype, {
   },
 });
 
-Object.assign(BinaryExpression.prototype, {
+Object.assign(BinaryExp.prototype, {
   foldIntegerConstants() {
     const x = Number(this.left.value);
     const y = Number(this.right.value);

@@ -9,8 +9,8 @@ const {
   IntLit,
   BoolLit,
   VarExp,
-  UnaryExpression,
-  BinaryExpression,
+  UnaryExp,
+  BinaryExp,
 } = require('../ast');
 
 const usedVariables = new Set();
@@ -116,14 +116,14 @@ VarExp.prototype.gen = function() {
   return new MemoryOperand(name);
 };
 
-UnaryExpression.prototype.gen = function() {
+UnaryExp.prototype.gen = function() {
   const result = allocator.ensureRegister(this.operand.gen());
   const instruction = { '-': 'neg', not: 'not' }[this.op];
   emit(instruction, result);
   return result;
 };
 
-BinaryExpression.prototype.gen = function() {
+BinaryExp.prototype.gen = function() {
   const left = this.left.gen();
   const result =
     this.op === '/' ? allocator.makeRegisterOperandFor('rax') : allocator.ensureRegister(left);

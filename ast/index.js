@@ -22,9 +22,6 @@ class Type {
   }
 }
 
-const IntType = new Type('int');
-const BoolType = new Type('bool');
-
 class AssignmentStatement {
   constructor(target, source) {
     Object.assign(this, { target, source });
@@ -72,14 +69,14 @@ class VarExp extends Expression {
   }
 }
 
-class UnaryExpression extends Expression {
+class UnaryExp extends Expression {
   constructor(op, operand) {
     super();
     Object.assign(this, { op, operand });
   }
 }
 
-class BinaryExpression extends Expression {
+class BinaryExp extends Expression {
   constructor(op, left, right) {
     super();
     Object.assign(this, { op, left, right });
@@ -91,8 +88,6 @@ module.exports = {
   Block,
   VarDec,
   Type,
-  IntType,
-  BoolType,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
@@ -101,6 +96,6 @@ module.exports = {
   BoolLit,
   IntLit,
   VarExp,
-  UnaryExpression,
-  BinaryExpression,
+  UnaryExp,
+  BinaryExp,
 };

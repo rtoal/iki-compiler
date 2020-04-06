@@ -13,8 +13,6 @@ const {
   Program,
   Block,
   VarDec,
-  IntType,
-  BoolType,
   AssignmentStatement,
   ReadStatement,
   WriteStatement,
@@ -22,8 +20,8 @@ const {
   BoolLit,
   IntLit,
   VarExp,
-  UnaryExpression,
-  BinaryExpression,
+  UnaryExp,
+  BinaryExp,
 } = require('..');
 
 const fixture = {
@@ -46,7 +44,7 @@ const fixture = {
 
   declarations: [
     String.raw`var x: int; var y: bool;`,
-    new Program(new Block([new VarDec('x', IntType), new VarDec('y', BoolType)])),
+    new Program(new Block([new VarDec('x', 'int'), new VarDec('y', 'bool')])),
   ],
 
   math: [
@@ -55,13 +53,13 @@ const fixture = {
       new Block([
         new ReadStatement([new VarExp('x'), new VarExp('y')]),
         new WriteStatement([
-          new BinaryExpression(
+          new BinaryExp(
             '*',
             new IntLit('2'),
-            new BinaryExpression(
+            new BinaryExp(
               '>',
-              new UnaryExpression('-', new IntLit('5')),
-              new BinaryExpression('+', new IntLit('7'), new IntLit('1'))
+              new UnaryExp('-', new IntLit('5')),
+              new BinaryExp('+', new IntLit('7'), new IntLit('1'))
             )
           ),
         ]),
@@ -74,10 +72,10 @@ const fixture = {
     new Program(
       new Block([
         new WriteStatement([
-          new BinaryExpression(
+          new BinaryExp(
             'and',
             new VarExp('x'),
-            new BinaryExpression('or', new UnaryExpression('not', new VarExp('y')), new VarExp('x'))
+            new BinaryExp('or', new UnaryExp('not', new VarExp('y')), new VarExp('x'))
           ),
         ]),
       ])

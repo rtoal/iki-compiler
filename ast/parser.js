@@ -9,8 +9,6 @@ const fs = require('fs');
 const {
   Program,
   Block,
-  IntType,
-  BoolType,
   VarDec,
   AssignmentStatement,
   ReadStatement,
@@ -19,8 +17,8 @@ const {
   IntLit,
   BoolLit,
   VarExp,
-  BinaryExpression,
-  UnaryExpression,
+  BinaryExp,
+  UnaryExp,
 } = require('.');
 
 const grammar = ohm.grammar(fs.readFileSync('./grammar/iki.ohm'));
@@ -49,25 +47,25 @@ const astBuilder = grammar.createSemantics().addOperation('ast', {
     return new WhileStatement(e.ast(), b.ast());
   },
   Type(typeName) {
-    return typeName.sourceString === 'int' ? IntType : BoolType;
+    return typeName.sourceString;
   },
   Exp_binary(e1, _, e2) {
-    return new BinaryExpression('or', e1.ast(), e2.ast());
+    return new BinaryExp('or', e1.ast(), e2.ast());
   },
   Exp1_binary(e1, _, e2) {
-    return new BinaryExpression('and', e1.ast(), e2.ast());
+    return new BinaryExp('and', e1.ast(), e2.ast());
   },
   Exp2_binary(e1, op, e2) {
-    return new BinaryExpression(op.sourceString, e1.ast(), e2.ast());
+    return new BinaryExp(op.sourceString, e1.ast(), e2.ast());
   },
   Exp3_binary(e1, op, e2) {
-    return new BinaryExpression(op.sourceString, e1.ast(), e2.ast());
+    return new BinaryExp(op.sourceString, e1.ast(), e2.ast());
   },
   Exp4_binary(e1, op, e2) {
-    return new BinaryExpression(op.sourceString, e1.ast(), e2.ast());
+    return new BinaryExp(op.sourceString, e1.ast(), e2.ast());
   },
   Exp5_unary(op, e) {
-    return new UnaryExpression(op.sourceString, e.ast());
+    return new UnaryExp(op.sourceString, e.ast());
   },
   Exp6_parens(_1, e, _2) {
     return e.ast();
